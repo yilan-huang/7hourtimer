@@ -10,6 +10,7 @@
   --accent:#c8492f;--accent-soft:#e8a08a;--done:#3c6e4f;--done-soft:#a9c7b3;
   --shadow:rgba(40,30,20,.12);--glow:rgba(200,73,47,.34);
   --bg-pool1:rgba(232,160,138,.36);--bg-pool2:rgba(200,114,47,.32);--bg-pool3:rgba(224,138,86,.34);
+  --hour-hue:0deg;--hour-bright:1;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{min-height:100%}
@@ -32,9 +33,10 @@ body::after{
     radial-gradient(ellipse 68% 60% at 10% 86%, var(--bg-pool2), transparent 72%),
     radial-gradient(circle at 50% 48%, rgba(255,253,248,.22), transparent 50%);
   background-repeat:no-repeat;
-  filter:saturate(1.4);
+  filter:saturate(1.4) hue-rotate(var(--hour-hue)) brightness(var(--hour-bright));
   animation:drift 6s ease-in-out infinite alternate;
   will-change:transform;
+  transition:filter 2s ease;
 }
 @keyframes drift{
   0%   {transform:translate(0,0) rotate(0deg) scale(1)}
@@ -66,6 +68,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .title-block .sub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;
   letter-spacing:.24em;text-transform:uppercase;color:#8a7d68;margin-top:9px}
 .title-block .greeting{color:var(--accent);font-weight:600}
+.title-block .tagline::before{content:"\00b7";margin:0 7px;color:#a89c86}
 .clock-block{text-align:right}
 .clock{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
   font-size:clamp(28px,4.6vw,42px);font-weight:200;letter-spacing:.02em;line-height:1}
@@ -175,11 +178,95 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .stage-hint{text-align:center;font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
   color:#b3a78f;letter-spacing:.08em;margin-top:6px}
 
+/* ===== mobile-only gallery layout (hidden on desktop) ===== */
+.mstage{display:none}
+.mhub{
+  width:100%;max-width:300px;min-height:148px;margin:0 auto;border-radius:22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  gap:4px;padding:18px 16px;
+  background:rgba(255,253,248,.26);border:1px solid rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
+  box-shadow:0 6px 22px rgba(40,30,20,.12);
+  transition:background .5s,border-color .5s,box-shadow .5s;
+}
+.mhub.featured{background:rgba(255,253,248,.5);border:1px solid transparent;
+  box-shadow:0 0 0 1.5px var(--accent-soft),0 14px 40px var(--shadow);
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px)}
+.mhub .big{font-size:42px;font-weight:700;color:#7a6f5d;line-height:1}
+.mhub .lab{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:#9a8d76;margin-top:4px}
+.mhub-active{display:none;flex-direction:column;align-items:center;gap:5px}
+.mhub.featured .mhub-idle{display:none}
+.mhub.featured .mhub-active{display:flex;animation:fadeIn .4s both}
+.mhub .htag{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);font-weight:700}
+.mhub .hname{font-size:17px;font-weight:700;line-height:1.1;max-width:88%}
+.mhub .htime{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
+  font-size:40px;font-weight:200;line-height:1}
+.mhub .hbtns{display:flex;gap:7px;margin-top:4px}
+.mhub .hbtns button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:9px;
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:7px;
+  border:1.5px solid;background:rgba(255,253,248,.7)}
+.mhub .b-pause{border-color:var(--accent);color:var(--accent)}
+.mhub .b-fin{border-color:var(--done);color:var(--done)}
+.mgallery-label{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:#b3a78f;text-align:center;margin:16px 0 8px}
+.mgallery{display:flex;overflow-x:auto;padding:6px 16px 14px;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mgallery::-webkit-scrollbar{display:none}
+.mtrack{display:flex;gap:13px}
+.mcard{
+  scroll-snap-align:center;flex:0 0 134px;min-height:150px;border-radius:20px;padding:14px 12px 12px;
+  background:rgba(255,253,248,.26);border:1px solid rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
+  box-shadow:0 6px 22px rgba(40,30,20,.12);text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .5s,transform .5s,flex-basis .5s,padding .5s,margin .5s;
+}
+.mcard.running{opacity:0;transform:scale(.6);pointer-events:none;flex-basis:0;width:0;
+  padding:0;margin:0;overflow:hidden}
+.mcard.done{opacity:.5;border-color:rgba(60,110,79,.22)}
+.mcard.done .mname{text-decoration:line-through;text-decoration-color:var(--done)}
+.mcard .mname{font-size:15px;font-weight:700;line-height:1.1;outline:none;border-radius:4px;padding:1px 3px}
+.mcard .mname:focus{background:rgba(200,73,47,.08)}
+.mcard .mnote{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;color:#8a7d68;
+  line-height:1.3;max-width:110px}
+.mcard .mtime{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
+  font-size:22px;font-weight:300}
+.mcard.done .mtime{color:var(--done);font-size:15px;font-weight:600}
+.mcard .mdot{width:8px;height:8px;border-radius:50%;background:var(--accent-soft)}
+.mcard.done .mdot{background:var(--done)}
+.mcard .mctl{display:flex;gap:5px;margin-top:2px}
+.mcard .mctl button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:9px;
+  font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:6px 9px;border-radius:6px;
+  border:1.5px solid;transition:background .15s,color .15s}
+.mcard .b-go{border-color:var(--accent);color:var(--accent);background:rgba(255,253,248,.6)}
+.mcard .b-done{border-color:var(--done);color:var(--done);background:rgba(255,253,248,.6)}
+.mcard.done .b-done{background:var(--done);color:#fff}
+
 @media(max-width:600px){
+  /* swap: hide the radial dial, show the gallery */
+  .stage{display:none}
+  .mstage{display:block;margin-top:22px}
+  /* keep the clock on the right; don't let it wrap to a full-width left row */
+  header{flex-wrap:nowrap;gap:14px;align-items:flex-start}
+  .title-block{min-width:0}
+  .title-block h1{font-size:clamp(26px,8vw,38px)}
+  .title-block .sub{font-size:10px;letter-spacing:.16em}
+  .title-block .tagline{display:block;margin-top:4px}
+  .title-block .tagline::before{content:none;margin:0}
+  .clock-block{flex:none;text-align:right}
+  .clock{font-size:clamp(22px,7vw,32px)}
+  .datestamp{font-size:10px;letter-spacing:.1em}
   .stage{max-width:440px}
   .spoke{width:104px;height:104px;margin-left:-52px;margin-top:-52px;padding:9px 7px}
   .spoke .sname{font-size:11px}.spoke .stime{font-size:15px}
   .spoke .sctl button{padding:4px 6px;font-size:9px}
+  /* record table: tighten so it fits a phone width */
+  .history{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .htable th,.htable td{padding:8px 7px;font-size:11px}
+  .htable th{font-size:9px;letter-spacing:.08em}
+  .hbar i{width:7px;height:7px}
 }
 
 /* finish-day-early escape hatch — subtle, below the dial */
@@ -245,7 +332,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   <header>
     <div class="title-block">
       <h1>Seven Hours</h1>
-      <div class="sub"><span class="greeting" id="greeting">Good day</span> &middot; one hour each, seven ways</div>
+      <div class="sub"><span class="greeting" id="greeting">Good day</span><span class="tagline">one hour each, seven ways</span></div>
     </div>
     <div class="clock-block">
       <div class="clock" id="clock">--:--<span class="ampm" id="ampm"></span></div>
@@ -276,6 +363,24 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
     </div>
   </div>
 
+  <!-- mobile-only layout: featured card on top + auto-scrolling gallery -->
+  <div class="mstage" id="mstage">
+    <div class="mhub" id="mhub">
+      <div class="mhub-idle"><div class="big" id="mHubCount">0/7</div><div class="lab">done today</div></div>
+      <div class="mhub-active">
+        <span class="htag">Now running</span>
+        <span class="hname" id="mHubName">&mdash;</span>
+        <span class="htime" id="mHubTime">60:00</span>
+        <div class="hbtns">
+          <button class="b-pause" id="mHubPause">Pause</button>
+          <button class="b-fin" id="mHubFin">Finish</button>
+        </div>
+      </div>
+    </div>
+    <div class="mgallery-label">&larr; swipe &middot; auto-scrolling &rarr;</div>
+    <div class="mgallery" id="mgallery"><div class="mtrack" id="mtrack"></div></div>
+  </div>
+
   <div class="end-day-wrap">
     <button class="end-day" id="endDayBtn">Finish the day here</button>
     <div class="end-day-confirm" id="endDayConfirm">
@@ -289,7 +394,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
     <h3>The record</h3>
     <div class="hsub">Every day, logged automatically on this device.</div>
     <table class="htable" id="htable">
-      <thead><tr><th>Date</th><th>Started</th><th>Finished</th><th>Span</th><th>Categories</th><th></th></tr></thead>
+      <thead><tr><th>Date</th><th>Started</th><th>Finished</th><th>Categories</th></tr></thead>
       <tbody id="hbody"></tbody>
     </table>
     <div class="hempty" id="hempty">No days logged yet. Finish all seven and today lands here.</div>
@@ -372,6 +477,11 @@ function applyTimeOfDay(){
   root.setProperty('--bg',bg);root.setProperty('--bg2',bg2);root.setProperty('--bg3',bg3);
   root.setProperty('--accent',accent);root.setProperty('--glow',g);
   root.setProperty('--bg-pool1',pool1);root.setProperty('--bg-pool2',pool2);root.setProperty('--bg-pool3',pool3);
+  // subtle per-hour shift: nudge the pool layer's hue/brightness so each hour feels distinct
+  const hourHue = (h*7 - 24);            // -24deg..+143deg across the day
+  const hourBright = 1 + ((h%6)-3)*0.012; // gentle ±brightness ripple within each period
+  root.setProperty('--hour-hue', hourHue+'deg');
+  root.setProperty('--hour-bright', hourBright.toFixed(3));
   document.getElementById('sky').style.background=sky;
   document.getElementById('greeting').textContent=greet;
 }
@@ -435,6 +545,57 @@ function refreshSpoke(i){
   const dn=sp.querySelector('[data-act="done"]');if(dn)dn.textContent=c.done?'Undo':'Finish';
 }
 
+/* ---- mobile gallery (mirrors the same state) ---- */
+const mstage=document.getElementById('mstage');
+const mhub=document.getElementById('mhub');
+const mgallery=document.getElementById('mgallery');
+const mtrack=document.getElementById('mtrack');
+let mcardEls=[];
+function buildMobile(){
+  mtrack.innerHTML='';mcardEls=[];
+  state.cats.forEach((c,i)=>{
+    const el=document.createElement('div');
+    el.className='mcard';el.dataset.i=i;
+    el.innerHTML=`
+      <span class="mname" contenteditable="true" spellcheck="false" data-i="${i}">${c.name}</span>
+      <span class="mnote">${c.note||''}</span>
+      <span class="mtime" data-time="${i}">${fmt(c.remaining)}</span>
+      <span class="mdot"></span>
+      <div class="mctl">
+        <button class="b-go" data-act="toggle" data-i="${i}">Start</button>
+        <button class="b-done" data-act="done" data-i="${i}">Finish</button>
+      </div>`;
+    mtrack.appendChild(el);mcardEls.push(el);
+  });
+}
+function refreshMcard(i){
+  const c=state.cats[i],el=mcardEls[i];if(!el)return;
+  el.classList.toggle('running',c.running);
+  el.classList.toggle('done',c.done);
+  // finished cards slide to the far right so unfinished ones stay in front
+  el.style.order = c.done ? (100+i) : i;
+  const t=el.querySelector('.mtime');if(t)t.textContent=c.done?'Done':fmt(c.remaining);
+  const go=el.querySelector('[data-act="toggle"]');
+  if(go){go.textContent=c.running?'Pause':(c.remaining<DURATION?'Resume':'Start');go.disabled=c.done;}
+  const dn=el.querySelector('[data-act="done"]');if(dn)dn.textContent=c.done?'Undo':'Finish';
+}
+function refreshMhub(){
+  const done=state.cats.filter(c=>c.done).length;
+  document.getElementById('mHubCount').textContent=`${done}/${N}`;
+  if(activeIdx>=0 && state.cats[activeIdx] && state.cats[activeIdx].running){
+    const c=state.cats[activeIdx];
+    mhub.classList.add('featured');
+    document.getElementById('mHubName').textContent=c.name;
+    document.getElementById('mHubTime').textContent=fmt(c.remaining);
+  }else{
+    mhub.classList.remove('featured');
+  }
+}
+function refreshMobile(){
+  state.cats.forEach((_,i)=>refreshMcard(i));
+  refreshMhub();
+}
+
 function refreshHub(){
   const done=state.cats.filter(c=>c.done).length;
   document.getElementById('hubCount').textContent=`${done}/${N}`;
@@ -452,6 +613,7 @@ function refreshAll(){
   state.cats.forEach((_,i)=>refreshSpoke(i));
   refreshHub();
   positionSpokes();
+  refreshMobile();
   const done=state.cats.filter(c=>c.done).length;
   document.getElementById('pfill').style.width=(done/N*100)+'%';
   document.getElementById('pcount').textContent=`${done} / ${N} done`;
@@ -508,11 +670,33 @@ stage.addEventListener('blur',e=>{
   if(e.target.classList.contains('sname')){
     const i=+e.target.dataset.i;
     state.cats[i].name=e.target.textContent.trim()||DEFAULTS[i].name;save();
-    if(activeIdx===i)refreshHub();
+    if(activeIdx===i){refreshHub();refreshMhub();}
+    if(mcardEls[i]){const n=mcardEls[i].querySelector('.mname');if(n)n.textContent=state.cats[i].name;}
   }
 },true);
 stage.addEventListener('keydown',e=>{
   if(e.target.classList.contains('sname')&&e.key==='Enter'){e.preventDefault();e.target.blur();}
+});
+
+/* ---- mobile gallery events (share toggle/finish/rename) ---- */
+mtrack.addEventListener('click',e=>{
+  const btn=e.target.closest('button');if(!btn)return;
+  const i=+btn.dataset.i,act=btn.dataset.act;
+  if(act==='toggle')toggle(i);
+  else if(act==='done')finish(i);
+});
+mhub.querySelector('#mHubPause').addEventListener('click',()=>{if(activeIdx>=0)toggle(activeIdx);});
+mhub.querySelector('#mHubFin').addEventListener('click',()=>{if(activeIdx>=0)finish(activeIdx);});
+mtrack.addEventListener('blur',e=>{
+  if(e.target.classList.contains('mname')){
+    const i=+e.target.dataset.i;
+    state.cats[i].name=e.target.textContent.trim()||DEFAULTS[i].name;save();
+    if(activeIdx===i)refreshMhub();
+    if(spokeEls[i]){const n=spokeEls[i].querySelector('.sname');if(n)n.textContent=state.cats[i].name;}
+  }
+},true);
+mtrack.addEventListener('keydown',e=>{
+  if(e.target.classList.contains('mname')&&e.key==='Enter'){e.preventDefault();e.target.blur();}
 });
 
 /* ---- per-second tick ---- */
@@ -528,13 +712,19 @@ function tick(){
       }
       const sp=spokeEls[i];
       if(sp){const t=sp.querySelector('.stime');if(t&&!c.done)t.textContent=fmt(c.remaining);}
-      if(activeIdx===i)document.getElementById('hubTime').textContent=fmt(c.remaining);
+      const mc=mcardEls[i];
+      if(mc){const mt=mc.querySelector('.mtime');if(mt&&!c.done)mt.textContent=fmt(c.remaining);}
+      if(activeIdx===i){
+        document.getElementById('hubTime').textContent=fmt(c.remaining);
+        document.getElementById('mHubTime').textContent=fmt(c.remaining);
+      }
     }
   });
   if(changed){save();
     // a timer may have just hit zero
-    state.cats.forEach((c,i)=>{if(c.remaining===0&&!c.running&&!c.done)refreshSpoke(i);});
+    state.cats.forEach((c,i)=>{if(c.remaining===0&&!c.running&&!c.done){refreshSpoke(i);refreshMcard(i);}});
     refreshHub();
+    refreshMhub();
     positionSpokes();
   }
 }
@@ -554,12 +744,11 @@ function renderHist(){
   if(!h.length){empty.style.display='block';return;}
   empty.style.display='none';
   h.forEach(d=>{
-    const full=d.done>=d.total,tr=document.createElement('tr');
+    const tr=document.createElement('tr');
     let bars='';for(let k=0;k<d.total;k++)bars+=`<i class="${k<d.done?'on':''}"></i>`;
     tr.innerHTML=`<td>${prettyDate(d.date)}</td><td class="num">${d.firstStart||'—'}</td>
-      <td class="num">${d.allDone||'—'}</td><td>${spanText(d.firstStart,d.allDone)||'—'}</td>
-      <td><span class="hbar">${bars}</span></td>
-      <td><span class="pill ${full?'full':'part'}">${d.done}/${d.total}</span></td>`;
+      <td class="num">${d.allDone||'—'}</td>
+      <td><span class="hbar">${bars}</span></td>`;
     body.appendChild(tr);
   });
 }
@@ -621,7 +810,7 @@ document.getElementById('endDayYes').addEventListener('click',()=>{
 /* ---- footer ---- */
 document.getElementById('resetBtn').addEventListener('click',()=>{
   if(confirm("Reset today's timers, checkmarks, and start/finish times? (History is kept.)")){
-    removeTodayFromHist();state=freshState();activeIdx=-1;buildSpokes();refreshAll();
+    removeTodayFromHist();state=freshState();activeIdx=-1;buildSpokes();buildMobile();refreshAll();
   }
 });
 document.getElementById('clearHist').addEventListener('click',()=>{
@@ -635,12 +824,33 @@ document.getElementById('exportBtn').addEventListener('click',()=>{
 });
 
 /* ---- init ---- */
-applyTimeOfDay();tickClock();buildSpokes();refreshAll();renderHist();
+applyTimeOfDay();tickClock();buildSpokes();buildMobile();refreshAll();renderHist();
 window.addEventListener('resize',positionSpokes);
 setInterval(tick,250);
 setInterval(tickClock,1000);
-setInterval(applyTimeOfDay,5*60*1000);
+setInterval(applyTimeOfDay,60*1000);
 window.addEventListener('beforeunload',save);
+
+/* ---- mobile gallery auto-scroll (slow drift, pause on touch, ping-pong) ---- */
+let mAuto=true,mDir=1,mResume;
+function mobileVisible(){return getComputedStyle(mstage).display!=='none';}
+function autoScroll(){
+  if(mAuto && mobileVisible()){
+    const max=mgallery.scrollWidth-mgallery.clientWidth;
+    if(max>4){
+      mgallery.scrollLeft += 0.4*mDir;
+      if(mgallery.scrollLeft>=max-0.5){mDir=-1;}
+      else if(mgallery.scrollLeft<=0.5){mDir=1;}
+    }
+  }
+  requestAnimationFrame(autoScroll);
+}
+requestAnimationFrame(autoScroll);
+['touchstart','pointerdown','wheel'].forEach(ev=>
+  mgallery.addEventListener(ev,()=>{mAuto=false;clearTimeout(mResume);},{passive:true}));
+['touchend','pointerup','mouseleave'].forEach(ev=>
+  mgallery.addEventListener(ev,()=>{clearTimeout(mResume);mResume=setTimeout(()=>mAuto=true,1800);}));
+
 </script>
 </body>
 </html>
