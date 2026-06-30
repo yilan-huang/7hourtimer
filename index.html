@@ -11,6 +11,8 @@
   --shadow:rgba(40,30,20,.12);--glow:rgba(200,73,47,.34);
   --bg-pool1:rgba(232,160,138,.36);--bg-pool2:rgba(200,114,47,.32);--bg-pool3:rgba(224,138,86,.34);
   --hour-hue:0deg;--hour-bright:1;
+  --ink-soft:#8a7d6c;
+  --card-fill:rgba(255,253,248,.26);--card-fill-hover:rgba(255,253,248,.5);--card-border:rgba(255,255,255,.5);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{min-height:100%}
@@ -25,24 +27,22 @@ body{
 }
 /* animated flowing color pools — fixed layer behind all content */
 body::after{
-  content:'';position:fixed;inset:-55%;z-index:0;pointer-events:none;
+  content:'';position:fixed;inset:-60%;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 70% 60% at 16% 14%, var(--glow), transparent 70%),
-    radial-gradient(ellipse 64% 56% at 86% 16%, var(--bg-pool1), transparent 72%),
-    radial-gradient(ellipse 78% 66% at 84% 88%, var(--bg-pool3), transparent 74%),
-    radial-gradient(ellipse 68% 60% at 10% 86%, var(--bg-pool2), transparent 72%),
-    radial-gradient(circle at 50% 48%, rgba(255,253,248,.22), transparent 50%);
+    radial-gradient(ellipse 95% 80% at 6% 4%, var(--glow), transparent 72%),
+    radial-gradient(ellipse 90% 78% at 96% 8%, var(--bg-pool1), transparent 74%),
+    radial-gradient(ellipse 100% 86% at 94% 98%, var(--bg-pool3), transparent 76%),
+    radial-gradient(ellipse 92% 80% at 2% 96%, var(--bg-pool2), transparent 74%);
   background-repeat:no-repeat;
-  filter:saturate(1.4) hue-rotate(var(--hour-hue)) brightness(var(--hour-bright));
-  animation:drift 6s ease-in-out infinite alternate;
+  filter:saturate(1) hue-rotate(var(--hour-hue)) brightness(var(--hour-bright));
+  animation:drift 15s ease-in-out infinite alternate;
   will-change:transform;
   transition:filter 2s ease;
 }
 @keyframes drift{
   0%   {transform:translate(0,0) rotate(0deg) scale(1)}
-  33%  {transform:translate(14%,-12%) rotate(11deg) scale(1.26)}
-  66%  {transform:translate(-12%,13%) rotate(-10deg) scale(1.18)}
-  100% {transform:translate(10%,8%) rotate(8deg) scale(1.30)}
+  50%  {transform:translate(8%,-6%) rotate(6deg) scale(1.16)}
+  100% {transform:translate(-6%,7%) rotate(-5deg) scale(1.12)}
 }
 @media(prefers-reduced-motion:reduce){body::after{animation:none}}
 /* fine grain + faint dot grid texture, fixed so it never scrolls or harms legibility */
@@ -56,6 +56,10 @@ body::before{
   mix-blend-mode:multiply;
 }
 .wrap{max-width:1180px;margin:0 auto;position:relative;z-index:2}
+
+/* all primary text follows --ink (light on dark bg, dark on light bg);
+   secondary/muted text follows --ink-soft. Both are recomputed per time-of-day. */
+body{color:var(--ink);transition:color 1.2s ease}
 .sky{height:5px;border-radius:6px;margin-bottom:24px;
   background:linear-gradient(90deg,var(--accent-soft),var(--accent),var(--done));
   opacity:.85;transition:background 1.2s ease}
@@ -64,33 +68,36 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   border-bottom:1px solid transparent;
   border-image:linear-gradient(90deg,transparent,rgba(31,27,22,.28),transparent) 1;
   padding-bottom:16px;flex-wrap:wrap}
-.title-block h1{font-size:clamp(32px,5.4vw,56px);font-weight:700;letter-spacing:-.02em;line-height:.95}
+.title-block .greeting-big{font-size:clamp(32px,5.4vw,56px);font-weight:700;letter-spacing:-.02em;
+  line-height:.95;color:var(--accent)}
+.title-block .app-name{font-family:"Helvetica Neue",Arial,sans-serif;font-size:15px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-top:10px}
 .title-block .sub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;
-  letter-spacing:.24em;text-transform:uppercase;color:#8a7d68;margin-top:9px}
-.title-block .greeting{color:var(--accent);font-weight:600}
-.title-block .tagline::before{content:"\00b7";margin:0 7px;color:#a89c86}
+  letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
 .clock-block{text-align:right}
 .clock{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
   font-size:clamp(28px,4.6vw,42px);font-weight:200;letter-spacing:.02em;line-height:1}
-.clock .ampm{font-size:.42em;font-weight:600;letter-spacing:.14em;margin-left:6px;color:#8a7d68}
+.clock .ampm{font-size:.42em;font-weight:600;letter-spacing:.14em;margin-left:6px;color:var(--ink-soft)}
 .datestamp{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;letter-spacing:.15em;
-  text-transform:uppercase;color:#8a7d68;margin-top:8px}
+  text-transform:uppercase;color:var(--ink-soft);margin-top:8px}
+.datestamp .ds-date::before{content:", "}
 
 .strip{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1px;margin:16px 0 0;
-  background:rgba(31,27,22,.08);border-radius:12px;overflow:hidden}
+  background:rgba(255,255,255,.10);border-radius:12px;overflow:hidden;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 @media(max-width:760px){.strip{grid-template-columns:1fr 1fr 1fr}}
-@media(max-width:480px){.strip{grid-template-columns:1fr}}
-.stat{background:rgba(255,253,248,.35);border:none;border-radius:0;
+.stat{background:rgba(255,255,255,.07);border:none;border-radius:0;
   padding:11px 15px;box-shadow:none;display:flex;flex-direction:column;gap:6px}
+.stat .lab-short{display:none}
 .stat .lab{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:#a89c86;font-weight:600}
-.stat .val{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;color:#5f5648}
+  text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.stat .val{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
 .pbar{height:7px;background:rgba(31,27,22,.07);border:none;border-radius:20px;
   overflow:hidden}
 .pfill{height:100%;width:0;background:linear-gradient(90deg,var(--done-soft),var(--done));
   transition:width .6s cubic-bezier(.4,0,.2,1)}
 .pcount{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:600;font-size:11px;
-  letter-spacing:.08em;text-transform:uppercase;color:#8a7d68}
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
 
 /* ===== radial stage ===== */
 .stage{position:relative;width:100%;max-width:720px;margin:14px auto 0;aspect-ratio:1/1}
@@ -100,8 +107,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   position:absolute;left:50%;top:50%;
   width:25%;height:25%;
   transform:translate(-50%,-50%) scale(1);
-  border-radius:50%;background:rgba(255,253,248,.25);
-  border:1px dashed rgba(31,27,22,.14);
+  border-radius:50%;background:var(--card-fill);
+  border:1px dashed var(--card-border);
   display:grid;place-items:center;text-align:center;z-index:5;
   box-shadow:none;
   transition:width .55s cubic-bezier(.5,0,.2,1),height .55s cubic-bezier(.5,0,.2,1),
@@ -109,7 +116,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   padding:14px;overflow:hidden;
 }
 .hub.featured{
-  width:40%;height:40%;border:1px solid transparent;background:var(--paper);
+  width:40%;height:40%;border:1px solid transparent;background:var(--card-fill-hover);
   box-shadow:0 0 0 1.5px var(--accent-soft),0 14px 40px var(--shadow);
 }
 .hub .hub-idle{transition:opacity .35s}
@@ -118,9 +125,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .hub.featured .hub-idle{opacity:0;pointer-events:none}
 .hub.featured .hub-active{display:flex;animation:fadeIn .5s .15s both}
 @keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
-.hub .big{font-size:clamp(26px,5.6vw,46px);font-weight:700;line-height:1;color:#7a6f5d}
+.hub .big{font-size:clamp(26px,5.6vw,46px);font-weight:700;line-height:1;color:var(--ink-soft)}
 .hub .lab{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;letter-spacing:.16em;
-  text-transform:uppercase;color:#9a8d76;margin-top:5px}
+  text-transform:uppercase;color:var(--ink-soft);margin-top:5px}
 .hub .htag{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--accent);font-weight:700}
 .hub .hname{font-size:clamp(15px,2.4vw,21px);font-weight:700;letter-spacing:-.01em;line-height:1.1;
@@ -131,31 +138,31 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .hub .hbtns button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:10px;
   font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:7px;
   border:1.5px solid;transition:background .15s,color .15s}
-.hub .b-pause{border-color:var(--accent);color:var(--accent);background:var(--paper)}
+.hub .b-pause{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,.12)}
 .hub .b-pause:hover{background:var(--accent);color:#fff}
-.hub .b-fin{border-color:var(--done);color:var(--done);background:var(--paper)}
+.hub .b-fin{border-color:var(--done);color:var(--done);background:rgba(255,255,255,.12)}
 .hub .b-fin:hover{background:var(--done);color:#fff}
 
 /* spokes */
 .spoke{
   position:absolute;width:158px;height:158px;margin-left:-79px;margin-top:-79px;
-  background:rgba(255,253,248,.26);border:1px solid rgba(255,255,255,.5);border-radius:22px;
+  background:var(--card-fill);border:1px solid var(--card-border);border-radius:22px;
   -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
-  padding:15px 13px 13px;box-shadow:0 6px 22px rgba(40,30,20,.12);text-align:center;
+  padding:15px 13px 44px;box-shadow:0 6px 22px rgba(40,30,20,.12);text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:7px;justify-content:center;
   transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),
     transform .35s cubic-bezier(.34,1.4,.5,1),box-shadow .35s,border-color .35s,opacity .5s,background .3s;
   z-index:2;cursor:pointer;
 }
 .spoke:hover{transform:scale(1.14);box-shadow:0 18px 38px rgba(40,30,20,.16);
-  background:rgba(255,253,248,.5);border-color:rgba(200,73,47,.30);z-index:6;gap:4px}
+  background:var(--card-fill-hover);border-color:rgba(200,73,47,.30);z-index:6;gap:4px}
 .spoke.running{border-color:var(--accent-soft);opacity:0;pointer-events:none;
   transform:scale(.55);z-index:1}
 .spoke.done{border-color:rgba(60,110,79,.22);opacity:.5}
 .spoke.done .sname{text-decoration:line-through;text-decoration-color:var(--done)}
 .spoke .sname{font-size:16px;font-weight:700;line-height:1.1}
 .spoke .snote{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;line-height:1.3;
-  color:#8a7d68;letter-spacing:.01em;max-width:120px;
+  color:var(--ink-soft);letter-spacing:.01em;max-width:120px;
   max-height:0;opacity:0;margin:0;overflow:hidden;
   transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .3s,margin .35s}
 .spoke:hover .snote{max-height:60px;opacity:1;margin:-1px 0 1px}
@@ -169,14 +176,14 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .spoke .sctl button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:10px;
   font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:7px 11px;border-radius:7px;
   border:1.5px solid;transition:background .15s,color .15s}
-.spoke .b-go{border-color:var(--accent);color:var(--accent);background:var(--paper)}
+.spoke .b-go{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,.12)}
 .spoke .b-go:hover{background:var(--accent);color:#fff}
-.spoke .b-done{border-color:var(--done);color:var(--done);background:var(--paper)}
+.spoke .b-done{border-color:var(--done);color:var(--done);background:rgba(255,255,255,.12)}
 .spoke .b-done:hover{background:var(--done);color:#fff}
 .spoke.done .b-done{background:var(--done);color:#fff}
 
 .stage-hint{text-align:center;font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
-  color:#b3a78f;letter-spacing:.08em;margin-top:6px}
+  color:var(--ink-soft);letter-spacing:.08em;margin-top:6px}
 
 /* ===== mobile-only gallery layout (hidden on desktop) ===== */
 .mstage{display:none}
@@ -184,17 +191,17 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   width:100%;max-width:300px;min-height:148px;margin:0 auto;border-radius:22px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   gap:4px;padding:18px 16px;
-  background:rgba(255,253,248,.26);border:1px solid rgba(255,255,255,.5);
+  background:var(--card-fill);border:1px solid var(--card-border);
   -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
   box-shadow:0 6px 22px rgba(40,30,20,.12);
   transition:background .5s,border-color .5s,box-shadow .5s;
 }
-.mhub.featured{background:rgba(255,253,248,.5);border:1px solid transparent;
+.mhub.featured{background:var(--card-fill-hover);border:1px solid transparent;
   box-shadow:0 0 0 1.5px var(--accent-soft),0 14px 40px var(--shadow);
   -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px)}
-.mhub .big{font-size:42px;font-weight:700;color:#7a6f5d;line-height:1}
+.mhub .big{font-size:42px;font-weight:700;color:var(--ink-soft);line-height:1}
 .mhub .lab{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:#9a8d76;margin-top:4px}
+  text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
 .mhub-active{display:none;flex-direction:column;align-items:center;gap:5px}
 .mhub.featured .mhub-idle{display:none}
 .mhub.featured .mhub-active{display:flex;animation:fadeIn .4s both}
@@ -206,18 +213,18 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .mhub .hbtns{display:flex;gap:7px;margin-top:4px}
 .mhub .hbtns button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:9px;
   font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:7px 13px;border-radius:7px;
-  border:1.5px solid;background:rgba(255,253,248,.7)}
+  border:1.5px solid;background:rgba(255,255,255,.12)}
 .mhub .b-pause{border-color:var(--accent);color:var(--accent)}
 .mhub .b-fin{border-color:var(--done);color:var(--done)}
 .mgallery-label{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:#b3a78f;text-align:center;margin:16px 0 8px}
-.mgallery{display:flex;overflow-x:auto;padding:6px 16px 14px;scroll-snap-type:x mandatory;
+  text-transform:uppercase;color:var(--ink-soft);text-align:center;margin:16px 0 8px}
+.mgallery{display:flex;overflow-x:auto;padding:6px 16px 14px;
   -webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mgallery::-webkit-scrollbar{display:none}
 .mtrack{display:flex;gap:13px}
 .mcard{
-  scroll-snap-align:center;flex:0 0 134px;min-height:150px;border-radius:20px;padding:14px 12px 12px;
-  background:rgba(255,253,248,.26);border:1px solid rgba(255,255,255,.5);
+  flex:0 0 134px;min-height:150px;border-radius:20px;padding:14px 12px 12px;
+  background:var(--card-fill);border:1px solid var(--card-border);
   -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
   box-shadow:0 6px 22px rgba(40,30,20,.12);text-align:center;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
@@ -229,7 +236,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .mcard.done .mname{text-decoration:line-through;text-decoration-color:var(--done)}
 .mcard .mname{font-size:15px;font-weight:700;line-height:1.1;outline:none;border-radius:4px;padding:1px 3px}
 .mcard .mname:focus{background:rgba(200,73,47,.08)}
-.mcard .mnote{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;color:#8a7d68;
+.mcard .mnote{font-family:"Helvetica Neue",Arial,sans-serif;font-size:9.5px;color:var(--ink-soft);
   line-height:1.3;max-width:110px}
 .mcard .mtime{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
   font-size:22px;font-weight:300}
@@ -240,8 +247,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .mcard .mctl button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:9px;
   font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:6px 9px;border-radius:6px;
   border:1.5px solid;transition:background .15s,color .15s}
-.mcard .b-go{border-color:var(--accent);color:var(--accent);background:rgba(255,253,248,.6)}
-.mcard .b-done{border-color:var(--done);color:var(--done);background:rgba(255,253,248,.6)}
+.mcard .b-go{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,.12)}
+.mcard .b-done{border-color:var(--done);color:var(--done);background:rgba(255,255,255,.12)}
 .mcard.done .b-done{background:var(--done);color:#fff}
 
 @media(max-width:600px){
@@ -251,13 +258,36 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   /* keep the clock on the right; don't let it wrap to a full-width left row */
   header{flex-wrap:nowrap;gap:14px;align-items:flex-start}
   .title-block{min-width:0}
-  .title-block h1{font-size:clamp(26px,8vw,38px)}
-  .title-block .sub{font-size:10px;letter-spacing:.16em}
-  .title-block .tagline{display:block;margin-top:4px}
-  .title-block .tagline::before{content:none;margin:0}
+  .title-block .greeting-big{font-size:clamp(24px,7.5vw,36px)}
+  .title-block .app-name{font-size:12px;letter-spacing:.12em;margin-top:7px}
+  .title-block .sub{font-size:10px;letter-spacing:.14em;margin-top:4px}
   .clock-block{flex:none;text-align:right}
   .clock{font-size:clamp(22px,7vw,32px)}
-  .datestamp{font-size:10px;letter-spacing:.1em}
+  .datestamp{font-size:10px;letter-spacing:.1em;line-height:1.5}
+  /* weekday and date on separate lines, right-aligned to match the left text */
+  .datestamp .ds-weekday,.datestamp .ds-date{display:block}
+  .datestamp .ds-date::before{content:none}
+
+  /* keep the compact strip at the top (below header, above the gallery) */
+  .wrap{display:flex;flex-direction:column}
+  .sky{order:0}
+  header{order:1}
+  .strip{order:2}
+  .mstage{order:3}
+  .end-day-wrap{order:4}
+  .history{order:5}
+  .footer-note{order:6}
+  .tod-control{order:7}
+  /* compact one-row strip with short labels */
+  .strip{grid-template-columns:1fr 1fr 1fr;margin:16px 0 0}
+  .stat{padding:8px 6px;gap:3px;align-items:center;text-align:center}
+  .stat .lab-full{display:none}
+  .stat .lab-short{display:inline}
+  .stat .lab{font-size:8px;letter-spacing:.1em}
+  .stat .val{font-size:14px}
+  .pbar{width:100%;height:6px}
+  .pcount{display:none}
+
   .stage{max-width:440px}
   .spoke{width:104px;height:104px;margin-left:-52px;margin-top:-52px;padding:9px 7px}
   .spoke .sname{font-size:11px}.spoke .stime{font-size:15px}
@@ -273,51 +303,63 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .end-day-wrap{margin:4px auto 0;text-align:center;min-height:30px}
 .end-day{
   font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;background:none;border:none;
-  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#b3a78f;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
   padding:6px 10px;border-radius:6px;transition:color .2s,background .2s;
 }
 .end-day:hover{color:var(--accent);background:rgba(200,73,47,.06)}
 .end-day-confirm{display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
-  font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:#7a6f5d}
+  font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft)}
 .end-day-confirm.show{display:flex;animation:fadeIn .25s both}
 .end-day-confirm button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:11px;
   font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 13px;border-radius:7px;
   border:1.5px solid;transition:background .15s,color .15s}
 .ed-yes{border-color:var(--accent);color:var(--accent);background:var(--paper)}
 .ed-yes:hover{background:var(--accent);color:#fff}
-.ed-no{border-color:rgba(31,27,22,.3);color:#7a6f5d;background:transparent}
+.ed-no{border-color:rgba(31,27,22,.3);color:var(--ink-soft);background:transparent}
 .ed-no:hover{background:rgba(31,27,22,.06)}
 
 /* history */
 .history{margin-top:8px;border-top:1px solid transparent;
-  border-image:linear-gradient(90deg,transparent,rgba(31,27,22,.28),transparent) 1;padding-top:18px}
-.history h3{font-size:22px;letter-spacing:-.01em;margin-bottom:4px}
+  border-image:linear-gradient(90deg,transparent,rgba(31,27,22,.28),transparent) 1;padding-top:8px}
+.history h3{font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:12px;text-align:center}
 .history .hsub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;
-  letter-spacing:.06em;color:#9a8d76;margin-bottom:16px}
+  letter-spacing:.06em;color:var(--ink-soft);margin-bottom:16px;text-align:center}
 .htable{width:100%;border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif}
-.htable th,.htable td{text-align:left;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
-.htable th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a8d76}
+.htable th,.htable td{text-align:center;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+.htable th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .htable td.num{font-variant-numeric:tabular-nums}
 .htable .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
 .pill.full{background:var(--done-soft);color:#234a34}
 .pill.part{background:#eadfca;color:#8a6d36}
-.hempty{font-family:"Helvetica Neue",Arial,sans-serif;color:#b3a78f;font-style:italic;
+.hempty{font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink-soft);font-style:italic;
   padding:14px 0;font-size:14px}
 .hbar{display:inline-flex;gap:3px;vertical-align:middle}
 .hbar i{width:9px;height:9px;border-radius:2px;background:var(--line);display:inline-block}
 .hbar i.on{background:var(--done)}
 
 .footer-note{font-family:"Helvetica Neue",Arial,sans-serif;text-align:center;margin-top:28px;
-  font-size:12px;letter-spacing:.05em;color:#9a8d76}
+  font-size:12px;letter-spacing:.05em;color:var(--ink-soft)}
 .link{color:var(--accent);text-decoration:underline;cursor:pointer;margin:0 4px}
+/* background time-of-day control: slider + auto reset */
+.tod-control{display:flex;align-items:center;justify-content:center;gap:12px;max-width:420px;
+  margin:14px auto 0;font-family:"Helvetica Neue",Arial,sans-serif}
+.tod-control .tod-lab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.tod-control button{background:none;border:none;padding:0;font-size:12px}
+#todSlider{flex:1;height:22px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+#todSlider::-webkit-slider-runnable-track{height:5px;border-radius:20px;
+  background:linear-gradient(90deg,#0b0c12,#2a2c46 12%,#d8c89a 28%,#e8b04a 50%,#c8492f 66%,#8a3a5a 80%,#1a1d3a 100%)}
+#todSlider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--ink);margin-top:-6px;box-shadow:0 2px 5px rgba(40,30,20,.3)}
+#todSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,.55)}
 
 .celebrate{position:fixed;inset:0;display:none;place-items:center;
   background:rgba(244,239,230,.93);z-index:50;backdrop-filter:blur(4px)}
 .celebrate.show{display:grid}
 .celebrate .msg{text-align:center;animation:rise .6s cubic-bezier(.2,.7,.3,1.2);max-width:440px;padding:20px}
-.celebrate h2{font-size:clamp(38px,7vw,74px);letter-spacing:-.02em}
+.celebrate h2{font-size:clamp(38px,7vw,74px);letter-spacing:-.02em;color:#1f1b16}
 .celebrate p{font-family:"Helvetica Neue",Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;
-  color:#8a7d68;margin-top:12px;font-size:13px;line-height:1.7}
+  color:#8a7d62;margin-top:12px;font-size:13px;line-height:1.7}
 .celebrate .stamp{color:var(--accent);font-weight:600}
 .celebrate button{max-width:220px;margin:24px auto 0;display:block;padding:11px 26px;cursor:pointer;
   font-family:"Helvetica Neue",Arial,sans-serif;border:1.5px solid var(--ink);background:var(--paper);
@@ -331,21 +373,22 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   <div class="sky" id="sky"></div>
   <header>
     <div class="title-block">
-      <h1>Seven Hours</h1>
-      <div class="sub"><span class="greeting" id="greeting">Good day</span><span class="tagline">one hour each, seven ways</span></div>
+      <div class="greeting-big" id="greeting">Good day</div>
+      <div class="app-name">Seven Hours</div>
+      <div class="sub"><span class="tagline">one hour each, seven ways</span></div>
     </div>
     <div class="clock-block">
       <div class="clock" id="clock">--:--<span class="ampm" id="ampm"></span></div>
-      <div class="datestamp" id="datestamp">&mdash;</div>
+      <div class="datestamp"><span class="ds-weekday" id="dsWeekday">&mdash;</span><span class="ds-date" id="dsDate"></span></div>
     </div>
   </header>
 
   <div class="strip">
-    <div class="stat"><span class="lab">Progress</span>
+    <div class="stat"><span class="lab"><span class="lab-full">Progress</span><span class="lab-short">Progress</span></span>
       <div class="pbar"><div class="pfill" id="pfill"></div></div>
       <span class="pcount" id="pcount">0 / 7 done</span></div>
-    <div class="stat"><span class="lab">First start</span><span class="val" id="firstStart">&mdash;</span></div>
-    <div class="stat"><span class="lab">All complete</span><span class="val" id="allDone">&mdash;</span></div>
+    <div class="stat"><span class="lab"><span class="lab-full">First start</span><span class="lab-short">Start</span></span><span class="val" id="firstStart">&mdash;</span></div>
+    <div class="stat"><span class="lab"><span class="lab-full">All complete</span><span class="lab-short">Complete</span></span><span class="val" id="allDone">&mdash;</span></div>
   </div>
 
   <div class="stage" id="stage">
@@ -392,19 +435,23 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 
   <div class="history">
     <h3>The record</h3>
-    <div class="hsub">Every day, logged automatically on this device.</div>
     <table class="htable" id="htable">
-      <thead><tr><th>Date</th><th>Started</th><th>Finished</th><th>Categories</th></tr></thead>
+      <thead><tr><th>Date</th><th>Started</th><th>Finished</th><th>progress</th></tr></thead>
       <tbody id="hbody"></tbody>
     </table>
     <div class="hempty" id="hempty">No days logged yet. Finish all seven and today lands here.</div>
   </div>
 
   <div class="footer-note">
-    Click a card&rsquo;s name to rename it.
     <span class="link" id="resetBtn">Reset today</span>&middot;
     <span class="link" id="exportBtn">Export records</span>&middot;
     <span class="link" id="clearHist">Clear history</span>
+  </div>
+
+  <div class="tod-control">
+    <span class="tod-lab">Background</span>
+    <input type="range" id="todSlider" min="0" max="24" step="0.05" value="12">
+    <button class="link" id="todAuto">Auto</button>
   </div>
 </div>
 
@@ -455,41 +502,94 @@ function saveHist(h){localStorage.setItem(HKEY,JSON.stringify(h));}
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');}
 function spanText(a,b){return a&&b?`${a} → ${b}`:'';}
 
-/* ---- time of day ---- */
+/* ---- time of day: continuous 24h color model ----
+   Anchor keyframes around the clock; any moment is interpolated between the
+   two surrounding anchors, so the background shifts gradually all day. */
+const TOD_ANCHORS=[
+  {h:0,  b1:[6,6,13],  b2:[9,8,17],  b3:[11,8,18],  ac:[104,118,182], ink:[220,214,204],
+    p1:[30,38,82], p2:[42,32,74], p3:[22,28,68], gl:[40,50,102], greet:"Burning the candle"},
+  {h:5,  b1:[42,42,72],  b2:[96,84,108], b3:[170,128,118], ac:[150,120,190], ink:[233,226,214],
+    p1:[110,100,180], p2:[185,125,150], p3:[225,155,125], gl:[175,150,210], greet:"Before dawn"},
+  {h:7,  b1:[200,180,140],b2:[225,200,150],b3:[235,210,150],ac:[150,158,52], ink:[40,38,28],
+    p1:[185,210,90], p2:[225,205,100], p3:[200,195,80], gl:[210,215,110], greet:"Good morning"},
+  {h:10, b1:[247,242,225],b2:[244,236,200],b3:[238,222,170],ac:[128,148,36], ink:[31,27,22],
+    p1:[180,210,90], p2:[225,200,95], p3:[200,200,85], gl:[200,210,100], greet:"Good morning"},
+  {h:13, b1:[251,244,228],b2:[248,236,207],b3:[242,224,184],ac:[200,122,47], ink:[31,27,22],
+    p1:[252,205,90], p2:[235,150,50], p3:[248,185,80], gl:[248,190,60], greet:"Good afternoon"},
+  {h:16, b1:[247,232,210],b2:[244,210,168],b3:[238,170,116],ac:[200,96,40], ink:[34,22,16],
+    p1:[250,180,90], p2:[230,120,50], p3:[245,150,70], gl:[238,160,70], greet:"Good afternoon"},
+  {h:19, b1:[214,128,80], b2:[200,90,54], b3:[178,64,46],  ac:[214,76,40], ink:[40,22,16],
+    p1:[244,140,66], p2:[220,82,40], p3:[234,108,50], gl:[236,120,52], greet:"Good evening"},
+  {h:20, b1:[64,60,92],  b2:[80,66,90],   b3:[120,72,64],  ac:[224,124,78], ink:[236,228,220],
+    p1:[150,90,78], p2:[78,80,138], p3:[58,70,126], gl:[178,104,74], greet:"Good evening"},
+  {h:21, b1:[16,22,52],  b2:[20,26,60],   b3:[24,26,62],  ac:[96,124,190], ink:[224,222,214],
+    p1:[34,50,114], p2:[42,54,122], p3:[28,42,102], gl:[42,64,138], greet:"Good evening"},
+  {h:24, b1:[6,6,13],  b2:[9,8,17],  b3:[11,8,18],  ac:[104,118,182], ink:[220,214,204],
+    p1:[30,38,82], p2:[42,32,74], p3:[22,28,68], gl:[40,50,102], greet:"Burning the candle"}
+];
+function todLerp(a,b,t){return Math.round(a+(b-a)*t);}
+function todRGB(c1,c2,t){return [todLerp(c1[0],c2[0],t),todLerp(c1[1],c2[1],t),todLerp(c1[2],c2[2],t)];}
+// mix a color toward its luminance-grey by amount k (0=unchanged, 1=fully grey)
+function todDesat(c,k){const g=0.299*c[0]+0.587*c[1]+0.114*c[2];
+  return [Math.round(c[0]+(g-c[0])*k),Math.round(c[1]+(g-c[1])*k),Math.round(c[2]+(g-c[2])*k)];}
+function todRgb(c){return `rgb(${c[0]},${c[1]},${c[2]})`;}
+function todRgba(c,a){return `rgba(${c[0]},${c[1]},${c[2]},${a})`;}
+function computeScheme(hf){
+  const h=((hf%24)+24)%24;
+  let i=0;while(i<TOD_ANCHORS.length-1 && TOD_ANCHORS[i+1].h<=h)i++;
+  const a=TOD_ANCHORS[i],b=TOD_ANCHORS[Math.min(i+1,TOD_ANCHORS.length-1)];
+  const span=(b.h-a.h)||1,t=(h-a.h)/span;
+  // muted, professional palette: pull base toward grey strongly, pools moderately,
+  // accent only lightly so it still reads as a signal color
+  const BASE_K=0.42, POOL_K=0.5, ACC_K=0.22;
+  const b1=todDesat(todRGB(a.b1,b.b1,t),BASE_K),b2=todDesat(todRGB(a.b2,b.b2,t),BASE_K),b3=todDesat(todRGB(a.b3,b.b3,t),BASE_K);
+  const ac=todDesat(todRGB(a.ac,b.ac,t),ACC_K);
+  const p1=todDesat(todRGB(a.p1,b.p1,t),POOL_K),p2=todDesat(todRGB(a.p2,b.p2,t),POOL_K),p3=todDesat(todRGB(a.p3,b.p3,t),POOL_K),gl=todDesat(todRGB(a.gl,b.gl,t),POOL_K);
+  // derive ink from the actual background luminance so text always contrasts
+  const lum=(0.299*b1[0]+0.587*b1[1]+0.114*b1[2]);
+  const dark = lum < 105;
+  const ink = dark ? [232,227,216] : [31,27,22];
+  const inkSoft = dark ? [180,176,166] : [138,125,108];
+  return {b1,b2,b3,ac,ink,inkSoft,p1,p2,p3,gl,greet:(t<0.5?a:b).greet,isDark:dark};
+}
+let todOverride=null;   // when set (0..24), user has picked a manual time; null = auto
 function applyTimeOfDay(){
-  const h=new Date().getHours(),root=document.documentElement.style;
-  let bg,bg2,bg3,accent,greet,sky,g,pool1,pool2,pool3;
-  if(h<6){bg="#ece6dc";bg2="#e4dccd";bg3="#dcd2c0";accent="#5566a8";greet="Burning the candle";
-    sky="linear-gradient(90deg,#3a3f6b,#5566a8,#8a6d9e)";g="rgba(85,102,168,.38)";
-    pool1="rgba(120,116,168,.36)";pool2="rgba(158,120,138,.34)";pool3="rgba(180,120,110,.34)";}
-  else if(h<11){bg="#f7f2e7";bg2="#f3ecdb";bg3="#ece0c9";accent="#c8492f";greet="Good morning";
-    sky="linear-gradient(90deg,#f3c98b,#e8a08a,#c8492f)";g="rgba(243,201,139,.44)";
-    pool1="rgba(232,160,138,.40)";pool2="rgba(243,201,139,.42)";pool3="rgba(230,150,100,.38)";}
-  else if(h<15){bg="#f5f1e6";bg2="#f0ead9";bg3="#ece2c8";accent="#c8722f";greet="Good afternoon";
-    sky="linear-gradient(90deg,#f0d27a,#e8b04a,#c8722f)";g="rgba(232,176,74,.42)";
-    pool1="rgba(240,210,122,.40)";pool2="rgba(200,114,47,.34)";pool3="rgba(224,150,80,.38)";}
-  else if(h<19){bg="#f5ede0";bg2="#efe4d2";bg3="#e7d8c0";accent="#c8492f";greet="Good afternoon";
-    sky="linear-gradient(90deg,#e8a08a,#c8492f,#9e5a3a)";g="rgba(200,73,47,.40)";
-    pool1="rgba(232,160,138,.40)";pool2="rgba(200,100,60,.36)";pool3="rgba(224,138,86,.38)";}
-  else{bg="#efe7da";bg2="#e7dccb";bg3="#ddd0bb";accent="#a8512f";greet="Good evening";
-    sky="linear-gradient(90deg,#d98c5f,#a8512f,#6b4f8a)";g="rgba(168,81,47,.40)";
-    pool1="rgba(217,140,95,.40)";pool2="rgba(190,110,90,.36)";pool3="rgba(210,120,80,.36)";}
-  root.setProperty('--bg',bg);root.setProperty('--bg2',bg2);root.setProperty('--bg3',bg3);
-  root.setProperty('--accent',accent);root.setProperty('--glow',g);
-  root.setProperty('--bg-pool1',pool1);root.setProperty('--bg-pool2',pool2);root.setProperty('--bg-pool3',pool3);
-  // subtle per-hour shift: nudge the pool layer's hue/brightness so each hour feels distinct
-  const hourHue = (h*7 - 24);            // -24deg..+143deg across the day
-  const hourBright = 1 + ((h%6)-3)*0.012; // gentle ±brightness ripple within each period
-  root.setProperty('--hour-hue', hourHue+'deg');
-  root.setProperty('--hour-bright', hourBright.toFixed(3));
-  document.getElementById('sky').style.background=sky;
-  document.getElementById('greeting').textContent=greet;
+  const root=document.documentElement.style;
+  const now=new Date();
+  const hf = todOverride!==null ? todOverride : (now.getHours()+now.getMinutes()/60);
+  const s=computeScheme(hf);
+  root.setProperty('--bg',todRgb(s.b1));root.setProperty('--bg2',todRgb(s.b2));root.setProperty('--bg3',todRgb(s.b3));
+  root.setProperty('--accent',todRgb(s.ac));root.setProperty('--ink',todRgb(s.ink));
+  root.setProperty('--ink-soft',todRgb(s.inkSoft));
+  // card surface adapts: light frosted on bright bg, dark frosted on dark bg
+  if(s.isDark){
+    root.setProperty('--card-fill','rgba(30,32,46,.42)');
+    root.setProperty('--card-fill-hover','rgba(40,42,60,.6)');
+    root.setProperty('--card-border','rgba(180,190,230,.22)');
+  }else{
+    root.setProperty('--card-fill','rgba(255,253,248,.26)');
+    root.setProperty('--card-fill-hover','rgba(255,253,248,.5)');
+    root.setProperty('--card-border','rgba(255,255,255,.5)');
+  }
+  // on dark backgrounds keep pools near the base tone (subtle), brighter days can pop
+  const pa = s.isDark ? 0.6 : 0.74;
+  root.setProperty('--glow',todRgba(s.gl, s.isDark?0.55:0.7));
+  root.setProperty('--bg-pool1',todRgba(s.p1,pa));
+  root.setProperty('--bg-pool2',todRgba(s.p2,pa-0.04));
+  root.setProperty('--bg-pool3',todRgba(s.p3,pa-0.02));
+  root.setProperty('--hour-hue','0deg');root.setProperty('--hour-bright','1');
+  document.getElementById('sky').style.background=`linear-gradient(90deg,${todRgb(s.b1)},${todRgb(s.b2)},${todRgb(s.b3)})`;
+  // greeting always follows the ACTUAL time, never the manual override
+  const realHf=now.getHours()+now.getMinutes()/60;
+  document.getElementById('greeting').textContent=computeScheme(realHf).greet;
+  document.body.classList.toggle('night',s.isDark);
 }
 function tickClock(){
   const now=new Date();let h=now.getHours();const ampm=h>=12?'PM':'AM';h=h%12||12;
   const m=String(now.getMinutes()).padStart(2,'0');
   document.getElementById('clock').innerHTML=`${h}:${m}<span class="ampm">${ampm}</span>`;
-  document.getElementById('datestamp').textContent=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('dsWeekday').textContent=now.toLocaleDateString(undefined,{weekday:'long'});
+  document.getElementById('dsDate').textContent=now.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
 }
 
 /* ---- build spokes once ---- */
@@ -708,7 +808,7 @@ function tick(){
       const el=Math.floor((now-c.lastTick)/1000);
       if(el>=1){
         c.remaining=Math.max(0,c.remaining-el);c.lastTick=now;changed=true;
-        if(c.remaining===0){c.running=false;if(activeIdx===i)activeIdx=-1;chime();}
+        if(c.remaining===0){c.running=false;c.done=true;if(activeIdx===i)activeIdx=-1;chime();}
       }
       const sp=spokeEls[i];
       if(sp){const t=sp.querySelector('.stime');if(t&&!c.done)t.textContent=fmt(c.remaining);}
@@ -721,11 +821,12 @@ function tick(){
     }
   });
   if(changed){save();
-    // a timer may have just hit zero
-    state.cats.forEach((c,i)=>{if(c.remaining===0&&!c.running&&!c.done){refreshSpoke(i);refreshMcard(i);}});
+    // a timer may have just hit zero → mark done, reflow, and check for full completion
+    state.cats.forEach((c,i)=>{if(c.remaining===0&&!c.running){refreshSpoke(i);refreshMcard(i);}});
     refreshHub();
     refreshMhub();
     positionSpokes();
+    checkComplete();
   }
 }
 
@@ -808,48 +909,63 @@ document.getElementById('endDayYes').addEventListener('click',()=>{
 });
 
 /* ---- footer ---- */
-document.getElementById('resetBtn').addEventListener('click',()=>{
+document.getElementById('resetBtn')?.addEventListener('click',()=>{
   if(confirm("Reset today's timers, checkmarks, and start/finish times? (History is kept.)")){
     removeTodayFromHist();state=freshState();activeIdx=-1;buildSpokes();buildMobile();refreshAll();
   }
 });
-document.getElementById('clearHist').addEventListener('click',()=>{
+document.getElementById('clearHist')?.addEventListener('click',()=>{
   if(confirm('Permanently delete all saved daily records?')){saveHist([]);renderHist();}
 });
-document.getElementById('exportBtn').addEventListener('click',()=>{
+document.getElementById('exportBtn')?.addEventListener('click',()=>{
   const h=loadHist();let csv="date,first_start,all_complete,categories_done,total\n";
   h.forEach(d=>{csv+=`${d.date},${d.firstStart||''},${d.allDone||''},${d.done},${d.total}\n`;});
   const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);a.download='seven-hours-records.csv';a.click();
 });
 
+/* ---- background time-of-day control ---- */
+const todSlider=document.getElementById('todSlider');
+const todAuto=document.getElementById('todAuto');
+function syncTodSlider(){
+  // reflect current auto time on the slider when in auto mode
+  if(todOverride===null){const n=new Date();todSlider.value=n.getHours()+n.getMinutes()/60;}
+  todAuto.style.opacity = todOverride===null ? '.4' : '1';
+}
+todSlider?.addEventListener('input',()=>{todOverride=+todSlider.value;applyTimeOfDay();todAuto.style.opacity='1';});
+todAuto?.addEventListener('click',()=>{todOverride=null;applyTimeOfDay();syncTodSlider();});
+syncTodSlider();
+
 /* ---- init ---- */
 applyTimeOfDay();tickClock();buildSpokes();buildMobile();refreshAll();renderHist();
 window.addEventListener('resize',positionSpokes);
 setInterval(tick,250);
 setInterval(tickClock,1000);
-setInterval(applyTimeOfDay,60*1000);
+setInterval(()=>{applyTimeOfDay();if(typeof syncTodSlider==='function')syncTodSlider();},3*60*1000);
 window.addEventListener('beforeunload',save);
 
 /* ---- mobile gallery auto-scroll (slow drift, pause on touch, ping-pong) ---- */
-let mAuto=true,mDir=1,mResume;
+let mAuto=true,mDir=1,mResume,mPos=0;
 function mobileVisible(){return getComputedStyle(mstage).display!=='none';}
 function autoScroll(){
   if(mAuto && mobileVisible()){
     const max=mgallery.scrollWidth-mgallery.clientWidth;
     if(max>4){
-      mgallery.scrollLeft += 0.4*mDir;
-      if(mgallery.scrollLeft>=max-0.5){mDir=-1;}
-      else if(mgallery.scrollLeft<=0.5){mDir=1;}
+      mPos += 0.45*mDir;
+      if(mPos>=max){mPos=max;mDir=-1;}
+      else if(mPos<=0){mPos=0;mDir=1;}
+      mgallery.scrollLeft=mPos;   // assign accumulated float so sub-pixel steps add up
     }
   }
   requestAnimationFrame(autoScroll);
 }
 requestAnimationFrame(autoScroll);
-['touchstart','pointerdown','wheel'].forEach(ev=>
-  mgallery.addEventListener(ev,()=>{mAuto=false;clearTimeout(mResume);},{passive:true}));
-['touchend','pointerup','mouseleave'].forEach(ev=>
-  mgallery.addEventListener(ev,()=>{clearTimeout(mResume);mResume=setTimeout(()=>mAuto=true,1800);}));
+function pauseAuto(){mAuto=false;clearTimeout(mResume);}
+function resumeAuto(){clearTimeout(mResume);mResume=setTimeout(()=>{mPos=mgallery.scrollLeft;mAuto=true;},1800);}
+['touchstart','pointerdown','wheel'].forEach(ev=>mgallery.addEventListener(ev,pauseAuto,{passive:true}));
+['touchend','pointerup','mouseleave'].forEach(ev=>mgallery.addEventListener(ev,resumeAuto));
+// keep the float in sync if the user scrolls manually
+mgallery.addEventListener('scroll',()=>{if(!mAuto)mPos=mgallery.scrollLeft;},{passive:true});
 
 </script>
 </body>
