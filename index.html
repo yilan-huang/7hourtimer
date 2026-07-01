@@ -170,9 +170,13 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .spoke .stime{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
   font-size:25px;font-weight:300;line-height:1}
 .spoke.done .stime{color:var(--done);font-size:17px;font-weight:600}
+.spoke.overtime .stime{color:var(--done);font-weight:600}
+.spoke.overtime{border-color:var(--done-soft)}
 .spoke .sdot{width:9px;height:9px;border-radius:50%;background:var(--accent-soft)}
 .spoke.done .sdot{background:var(--done)}
-.spoke .sctl{display:flex;gap:6px;margin-top:2px}
+.spoke.overtime .sdot{background:var(--done);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.spoke .sctl{display:flex;gap:6px;position:absolute;left:0;right:0;bottom:14px;justify-content:center}
 .spoke .sctl button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:10px;
   font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:7px 11px;border-radius:7px;
   border:1.5px solid;transition:background .15s,color .15s}
@@ -223,7 +227,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .mgallery::-webkit-scrollbar{display:none}
 .mtrack{display:flex;gap:13px}
 .mcard{
-  flex:0 0 134px;min-height:150px;border-radius:20px;padding:14px 12px 12px;
+  flex:0 0 134px;min-height:150px;border-radius:20px;padding:14px 12px 42px;position:relative;
   background:var(--card-fill);border:1px solid var(--card-border);
   -webkit-backdrop-filter:blur(11px) saturate(1.2);backdrop-filter:blur(11px) saturate(1.2);
   box-shadow:0 6px 22px rgba(40,30,20,.12);text-align:center;
@@ -241,9 +245,11 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .mcard .mtime{font-family:"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;
   font-size:22px;font-weight:300}
 .mcard.done .mtime{color:var(--done);font-size:15px;font-weight:600}
+.mcard.overtime .mtime{color:var(--done);font-weight:600}
+.mcard.overtime{border-color:var(--done-soft)}
 .mcard .mdot{width:8px;height:8px;border-radius:50%;background:var(--accent-soft)}
 .mcard.done .mdot{background:var(--done)}
-.mcard .mctl{display:flex;gap:5px;margin-top:2px}
+.mcard .mctl{display:flex;gap:5px;position:absolute;left:0;right:0;bottom:12px;justify-content:center}
 .mcard .mctl button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:9px;
   font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:6px 9px;border-radius:6px;
   border:1.5px solid;transition:background .15s,color .15s}
@@ -299,21 +305,23 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   .hbar i{width:7px;height:7px}
 }
 
-/* finish-day-early escape hatch — subtle, below the dial */
-.end-day-wrap{margin:4px auto 0;text-align:center;min-height:30px}
+/* finish & start new day — subtle filled pill below the cards */
+.end-day-wrap{margin:18px auto 4px;text-align:center;min-height:34px}
 .end-day{
-  font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;background:none;border:none;
-  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
-  padding:6px 10px;border-radius:6px;transition:color .2s,background .2s;
+  font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;
+  background:var(--card-fill);border:1px solid var(--card-border);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  padding:10px 22px;border-radius:22px;transition:color .2s,background .2s,border-color .2s;
 }
-.end-day:hover{color:var(--accent);background:rgba(200,73,47,.06)}
+.end-day:hover{color:var(--accent);border-color:var(--accent);background:var(--card-fill-hover)}
 .end-day-confirm{display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
   font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft)}
 .end-day-confirm.show{display:flex;animation:fadeIn .25s both}
 .end-day-confirm button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:11px;
-  font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 13px;border-radius:7px;
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:8px 15px;border-radius:20px;
   border:1.5px solid;transition:background .15s,color .15s}
-.ed-yes{border-color:var(--accent);color:var(--accent);background:var(--paper)}
+.ed-yes{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,.12)}
 .ed-yes:hover{background:var(--accent);color:#fff}
 .ed-no{border-color:rgba(31,27,22,.3);color:var(--ink-soft);background:transparent}
 .ed-no:hover{background:rgba(31,27,22,.06)}
@@ -325,6 +333,14 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .history .hsub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;
   letter-spacing:.06em;color:var(--ink-soft);margin-bottom:16px;text-align:center}
 .htable{width:100%;border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif}
+.detail-wrap{text-align:center;margin-top:16px}
+.detail-btn{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
+  display:inline-block;padding:9px 20px;border-radius:20px;
+  background:var(--card-fill);border:1px solid var(--card-border);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  transition:color .2s,border-color .2s,background .2s}
+.detail-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--card-fill-hover)}
 .htable th,.htable td{text-align:center;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
 .htable th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .htable td.num{font-variant-numeric:tabular-nums}
@@ -425,10 +441,10 @@ body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,
   </div>
 
   <div class="end-day-wrap">
-    <button class="end-day" id="endDayBtn">Finish the day here</button>
+    <button class="end-day" id="endDayBtn">Finish &amp; start new day</button>
     <div class="end-day-confirm" id="endDayConfirm">
-      <span id="endDayMsg">Log today with fewer than 7 done?</span>
-      <button class="ed-yes" id="endDayYes">Yes, log it</button>
+      <span id="endDayMsg">Log this day and start fresh?</span>
+      <button class="ed-yes" id="endDayYes">Yes, log &amp; reset</button>
       <button class="ed-no" id="endDayNo">Cancel</button>
     </div>
   </div>
@@ -440,12 +456,11 @@ body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,
       <tbody id="hbody"></tbody>
     </table>
     <div class="hempty" id="hempty">No days logged yet. Finish all seven and today lands here.</div>
+    <div class="detail-wrap"><a class="detail-btn" href="records.html">Detail records</a></div>
   </div>
 
   <div class="footer-note">
-    <span class="link" id="resetBtn">Reset today</span>&middot;
-    <span class="link" id="exportBtn">Export records</span>&middot;
-    <span class="link" id="clearHist">Clear history</span>
+    <span class="link" id="resetBtn">Reset today</span>
   </div>
 
   <div class="tod-control">
@@ -486,20 +501,35 @@ function nowClock(){return new Date().toLocaleTimeString(undefined,{hour:'numeri
 
 function freshState(){
   return {date:todayStr(),firstStart:null,allDone:null,
-    cats:DEFAULTS.map(c=>({name:c.name,note:c.note,remaining:DURATION,running:false,done:false,lastTick:null}))};
+    cats:DEFAULTS.map(c=>({name:c.name,note:c.note,elapsed:0,remaining:DURATION,running:false,done:false,lastTick:null}))};
 }
 function load(){
+  // Restore the saved session regardless of calendar date — the day only ends
+  // when the user resets it (they may work past midnight). No auto-reset at 12am.
   try{const raw=localStorage.getItem(KEY);
-    if(raw){const s=JSON.parse(raw);if(s.date===todayStr()){reconcile(s);return s;}}}catch(e){}
+    if(raw){const s=JSON.parse(raw);reconcile(s);return s;}}catch(e){}
   return freshState();
 }
 function reconcile(s){const now=Date.now();
-  s.cats.forEach(c=>{if(c.running&&c.lastTick){const el=Math.floor((now-c.lastTick)/1000);
-    c.remaining=Math.max(0,c.remaining-el);c.lastTick=now;if(c.remaining===0)c.running=false;}});}
+  s.cats.forEach(c=>{
+    // migrate old saves that only had `remaining`
+    if(c.elapsed==null)c.elapsed=Math.max(0,DURATION-(c.remaining!=null?c.remaining:DURATION));
+    if(c.running&&c.lastTick){
+      const el=Math.floor((now-c.lastTick)/1000);
+      c.elapsed+=el;c.lastTick=now;
+    }
+    c.remaining=Math.max(0,DURATION-c.elapsed);
+  });
+}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function loadHist(){try{return JSON.parse(localStorage.getItem(HKEY))||[];}catch(e){return[];}}
 function saveHist(h){localStorage.setItem(HKEY,JSON.stringify(h));}
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');}
+// display for a category: counts down to 00:00, then shows overtime as +MM:SS
+function timerText(c){
+  if(c.elapsed>=DURATION){const ov=c.elapsed-DURATION;return '+'+fmt(ov);}
+  return fmt(c.remaining);
+}
 function spanText(a,b){return a&&b?`${a} → ${b}`:'';}
 
 /* ---- time of day: continuous 24h color model ----
@@ -635,13 +665,20 @@ function positionSpokes(){
   });
 }
 
+function doneLabel(c){
+  // when a category is done, show its overtime if any, else "Done"
+  const ov=c.elapsed-DURATION;
+  return ov>=1 ? '+'+fmt(ov) : 'Done';
+}
 function refreshSpoke(i){
   const c=state.cats[i],sp=spokeEls[i];if(!sp)return;
-  sp.classList.toggle('running',c.running);
-  sp.classList.toggle('done',c.done);
-  const t=sp.querySelector('.stime');if(t)t.textContent=c.done?'Done':fmt(c.remaining);
+  const overtime = c.done && c.running;        // done but still recording extra time
+  sp.classList.toggle('running',c.running);    // running (incl. overtime) hides it into the hub
+  sp.classList.toggle('done', c.done && !c.running); // "done pile" look only when parked
+  sp.classList.toggle('overtime', overtime);
+  const t=sp.querySelector('.stime');if(t)t.textContent=c.running?timerText(c):(c.done?doneLabel(c):fmt(c.remaining));
   const go=sp.querySelector('[data-act="toggle"]');
-  if(go){go.textContent=c.running?'Pause':(c.remaining<DURATION?'Resume':'Start');go.disabled=c.done;}
+  if(go){go.textContent=c.running?'Pause':(c.elapsed>0?'Resume':'Start');go.disabled=false;}
   const dn=sp.querySelector('[data-act="done"]');if(dn)dn.textContent=c.done?'Undo':'Finish';
 }
 
@@ -670,13 +707,15 @@ function buildMobile(){
 }
 function refreshMcard(i){
   const c=state.cats[i],el=mcardEls[i];if(!el)return;
+  const overtime = c.done && c.running;
   el.classList.toggle('running',c.running);
-  el.classList.toggle('done',c.done);
-  // finished cards slide to the far right so unfinished ones stay in front
-  el.style.order = c.done ? (100+i) : i;
-  const t=el.querySelector('.mtime');if(t)t.textContent=c.done?'Done':fmt(c.remaining);
+  el.classList.toggle('done', c.done && !c.running);
+  el.classList.toggle('overtime', overtime);
+  // parked-done cards slide to the far right; overtime (done+running) stays in place
+  el.style.order = (c.done && !c.running) ? (100+i) : i;
+  const t=el.querySelector('.mtime');if(t)t.textContent=c.running?timerText(c):(c.done?doneLabel(c):fmt(c.remaining));
   const go=el.querySelector('[data-act="toggle"]');
-  if(go){go.textContent=c.running?'Pause':(c.remaining<DURATION?'Resume':'Start');go.disabled=c.done;}
+  if(go){go.textContent=c.running?'Pause':(c.elapsed>0?'Resume':'Start');go.disabled=false;}
   const dn=el.querySelector('[data-act="done"]');if(dn)dn.textContent=c.done?'Undo':'Finish';
 }
 function refreshMhub(){
@@ -686,7 +725,7 @@ function refreshMhub(){
     const c=state.cats[activeIdx];
     mhub.classList.add('featured');
     document.getElementById('mHubName').textContent=c.name;
-    document.getElementById('mHubTime').textContent=fmt(c.remaining);
+    document.getElementById('mHubTime').textContent=timerText(c);
   }else{
     mhub.classList.remove('featured');
   }
@@ -703,7 +742,7 @@ function refreshHub(){
     const c=state.cats[activeIdx];
     hub.classList.add('featured');
     document.getElementById('hubName').textContent=c.name;
-    document.getElementById('hubTime').textContent=fmt(c.remaining);
+    document.getElementById('hubTime').textContent=timerText(c);
   }else{
     hub.classList.remove('featured');
   }
@@ -731,8 +770,9 @@ function setActive(i){
   activeIdx=i;
 }
 function toggle(i){
-  const c=state.cats[i];if(c.done)return;
+  const c=state.cats[i];
   if(c.running){
+    // pause (also stops overtime recording on a done card)
     c.running=false;c.lastTick=null;
     if(activeIdx===i)activeIdx=-1;
   }else{
@@ -745,14 +785,20 @@ function toggle(i){
 function finish(i){
   const c=state.cats[i];
   c.done=!c.done;
-  if(c.done){c.running=false;c.lastTick=null;if(activeIdx===i)activeIdx=-1;}
-  else{if(state.allDone){state.allDone=null;removeTodayFromHist();}}
+  if(c.done){
+    // mark done: stop the timer and park it (no forced overtime)
+    c.running=false;c.lastTick=null;if(activeIdx===i)activeIdx=-1;
+  }else{
+    if(state.allDone){state.allDone=null;removeTodayFromHist();}
+  }
   save();refreshAll();checkComplete();
 }
 function checkComplete(){
   const done=state.cats.filter(c=>c.done).length;
   if(done===N&&!state.allDone){
-    state.allDone=nowClock();save();logToday();showCelebrate();refreshAll();
+    // all seven reached — celebrate and stamp the finish time, but DON'T log yet:
+    // the user may keep accruing overtime; the day is logged on "Finish & start new day".
+    state.allDone=nowClock();save();showCelebrate();refreshAll();
   }
 }
 
@@ -807,22 +853,26 @@ function tick(){
       if(!c.lastTick)c.lastTick=now;
       const el=Math.floor((now-c.lastTick)/1000);
       if(el>=1){
-        c.remaining=Math.max(0,c.remaining-el);c.lastTick=now;changed=true;
-        if(c.remaining===0){c.running=false;c.done=true;if(activeIdx===i)activeIdx=-1;chime();}
+        const wasDone=c.done;
+        c.elapsed+=el;c.lastTick=now;changed=true;
+        c.remaining=Math.max(0,DURATION-c.elapsed);
+        // goal reached: mark done + chime once, but KEEP running into overtime
+        if(!wasDone && c.elapsed>=DURATION){c.done=true;chime();}
       }
+      const disp = timerText(c);
       const sp=spokeEls[i];
-      if(sp){const t=sp.querySelector('.stime');if(t&&!c.done)t.textContent=fmt(c.remaining);}
+      if(sp){const t=sp.querySelector('.stime');if(t)t.textContent=disp;}
       const mc=mcardEls[i];
-      if(mc){const mt=mc.querySelector('.mtime');if(mt&&!c.done)mt.textContent=fmt(c.remaining);}
+      if(mc){const mt=mc.querySelector('.mtime');if(mt)mt.textContent=disp;}
       if(activeIdx===i){
-        document.getElementById('hubTime').textContent=fmt(c.remaining);
-        document.getElementById('mHubTime').textContent=fmt(c.remaining);
+        document.getElementById('hubTime').textContent=disp;
+        document.getElementById('mHubTime').textContent=disp;
       }
     }
   });
   if(changed){save();
-    // a timer may have just hit zero → mark done, reflow, and check for full completion
-    state.cats.forEach((c,i)=>{if(c.remaining===0&&!c.running){refreshSpoke(i);refreshMcard(i);}});
+    // reflect any newly-done cards and check full completion
+    state.cats.forEach((c,i)=>{refreshSpoke(i);refreshMcard(i);});
     refreshHub();
     refreshMhub();
     positionSpokes();
@@ -834,8 +884,15 @@ function tick(){
 function logToday(){
   const done=state.cats.filter(c=>c.done).length;
   const h=loadHist().filter(d=>d.date!==state.date);
-  h.unshift({date:state.date,firstStart:state.firstStart,allDone:state.allDone,
-    done:done,total:N,cats:state.cats.map(c=>c.name)});
+  h.unshift({
+    date:state.date,               // the day the session STARTED (before midnight if late)
+    firstStart:state.firstStart,
+    allDone:state.allDone,
+    done:done,total:N,
+    // detailed per-category breakdown: total seconds spent (incl. overtime) + finished
+    cats:state.cats.map(c=>({name:c.name,spent:(c.elapsed!=null?c.elapsed:Math.max(0,DURATION-c.remaining)),done:!!c.done})),
+    loggedAt:new Date().toISOString()
+  });
   saveHist(h);renderHist();
 }
 function removeTodayFromHist(){saveHist(loadHist().filter(d=>d.date!==state.date));renderHist();}
@@ -872,20 +929,17 @@ function showCelebrate(){
 }
 document.getElementById('celebClose').addEventListener('click',()=>celeb.classList.remove('show'));
 
-/* ---- finish the day early (escape hatch, double-confirm) ---- */
+/* ---- finish & start new day (combined, double-confirm) ---- */
 const endDayBtn=document.getElementById('endDayBtn');
 const endDayConfirm=document.getElementById('endDayConfirm');
 const endDayMsg=document.getElementById('endDayMsg');
-function refreshEndDay(){
-  // hide the option once the day is already logged
-  endDayBtn.style.display = state.allDone ? 'none' : '';
-  if(state.allDone){endDayConfirm.classList.remove('show');}
-}
+function refreshEndDay(){ /* always available — it's the daily rollover control */ }
 endDayBtn.addEventListener('click',()=>{
   const done=state.cats.filter(c=>c.done).length;
-  endDayMsg.textContent = done===N
-    ? 'Log today as complete now?'
-    : `Finish the day with ${done} of ${N} done?`;
+  const started = state.firstStart || done>0;
+  endDayMsg.textContent = started
+    ? `Log this day (${done}/${N} done) and start fresh?`
+    : 'Start a fresh day? (Nothing to log yet.)';
   endDayBtn.style.display='none';
   endDayConfirm.classList.add('show');
 });
@@ -895,17 +949,17 @@ document.getElementById('endDayNo').addEventListener('click',()=>{
 });
 document.getElementById('endDayYes').addEventListener('click',()=>{
   const done=state.cats.filter(c=>c.done).length;
-  // second confirmation before it actually logs
-  if(!confirm(`This logs today (${done}/${N}) to your records and ends the day. Continue?`)){
-    return;
-  }
-  // stop any running timer, stamp completion, log, celebrate
-  state.cats.forEach((c,i)=>{if(c.running){c.running=false;c.lastTick=null;}});
+  const started = state.firstStart || done>0;
+  // stop any running timer, stamp finish time, log the detailed day (under the
+  // date it STARTED), then reset to a fresh day
+  state.cats.forEach((c)=>{if(c.running){c.running=false;c.lastTick=null;}});
   activeIdx=-1;
-  if(!state.allDone)state.allDone=nowClock();
-  save();logToday();
+  if(started){ if(!state.allDone)state.allDone=nowClock(); save(); logToday(); }
   endDayConfirm.classList.remove('show');
-  refreshAll();showCelebrate();
+  endDayBtn.style.display='';
+  const wasComplete = done===N;
+  state=freshState();activeIdx=-1;buildSpokes();buildMobile();refreshAll();
+  if(wasComplete) showCelebrate();
 });
 
 /* ---- footer ---- */
@@ -913,15 +967,6 @@ document.getElementById('resetBtn')?.addEventListener('click',()=>{
   if(confirm("Reset today's timers, checkmarks, and start/finish times? (History is kept.)")){
     removeTodayFromHist();state=freshState();activeIdx=-1;buildSpokes();buildMobile();refreshAll();
   }
-});
-document.getElementById('clearHist')?.addEventListener('click',()=>{
-  if(confirm('Permanently delete all saved daily records?')){saveHist([]);renderHist();}
-});
-document.getElementById('exportBtn')?.addEventListener('click',()=>{
-  const h=loadHist();let csv="date,first_start,all_complete,categories_done,total\n";
-  h.forEach(d=>{csv+=`${d.date},${d.firstStart||''},${d.allDone||''},${d.done},${d.total}\n`;});
-  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='seven-hours-records.csv';a.click();
 });
 
 /* ---- background time-of-day control ---- */
