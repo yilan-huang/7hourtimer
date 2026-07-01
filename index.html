@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Seven Hours</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#c8722f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Seven Hours">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 :root{
   --bg:#f4efe6;--bg2:#efe7d8;--bg3:#e9dfcc;--ink:#1f1b16;--paper:#fffdf8;--line:#d8cfbe;
@@ -35,14 +43,14 @@ body::after{
     radial-gradient(ellipse 92% 80% at 2% 96%, var(--bg-pool2), transparent 74%);
   background-repeat:no-repeat;
   filter:saturate(1) hue-rotate(var(--hour-hue)) brightness(var(--hour-bright));
-  animation:drift 15s ease-in-out infinite alternate;
+  animation:drift 10s ease-in-out infinite alternate;
   will-change:transform;
   transition:filter 2s ease;
 }
 @keyframes drift{
   0%   {transform:translate(0,0) rotate(0deg) scale(1)}
-  50%  {transform:translate(8%,-6%) rotate(6deg) scale(1.16)}
-  100% {transform:translate(-6%,7%) rotate(-5deg) scale(1.12)}
+  50%  {transform:translate(11%,-9%) rotate(8deg) scale(1.2)}
+  100% {transform:translate(-9%,10%) rotate(-7deg) scale(1.15)}
 }
 @media(prefers-reduced-motion:reduce){body::after{animation:none}}
 /* fine grain + faint dot grid texture, fixed so it never scrolls or harms legibility */
@@ -306,7 +314,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 }
 
 /* finish & start new day — subtle filled pill below the cards */
-.end-day-wrap{margin:18px auto 4px;text-align:center;min-height:34px}
+.end-day-wrap{margin:22px auto 0;text-align:center;min-height:34px}
 .end-day{
   font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;
   background:var(--card-fill);border:1px solid var(--card-border);
@@ -327,8 +335,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .ed-no:hover{background:rgba(31,27,22,.06)}
 
 /* history */
-.history{margin-top:8px;border-top:1px solid transparent;
-  border-image:linear-gradient(90deg,transparent,rgba(31,27,22,.28),transparent) 1;padding-top:8px}
+.history{margin-top:40px;border-top:1px solid transparent;
+  border-image:linear-gradient(90deg,transparent,rgba(31,27,22,.28),transparent) 1;padding-top:22px}
 .history h3{font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:12px;text-align:center}
 .history .hsub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;
   letter-spacing:.06em;color:var(--ink-soft);margin-bottom:16px;text-align:center}
@@ -368,6 +376,66 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
   background:var(--paper);border:2px solid var(--ink);margin-top:-6px;box-shadow:0 2px 5px rgba(40,30,20,.3)}
 #todSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
 body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,.55)}
+
+/* two-button row under the cards */
+.end-day-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ===== modals (Manage + Onboarding) ===== */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(20,16,12,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal.show{display:flex;animation:mfade .2s both}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.modal-card{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:var(--paper);
+  border-radius:22px 22px 0 0;padding:22px 20px 24px;box-shadow:0 -10px 40px rgba(20,16,12,.3);
+  animation:mrise .3s cubic-bezier(.2,.8,.3,1) both;color:#1f1b16}
+@media(min-width:600px){.modal{align-items:center}.modal-card{border-radius:22px;max-height:82vh}}
+@keyframes mrise{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.modal-head h2{font-size:22px;letter-spacing:-.01em}
+.modal-x{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:#9a8d76;
+  font-family:"Helvetica Neue",Arial,sans-serif;padding:0 4px}
+.modal-x:hover{color:var(--accent)}
+.modal-list{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.timer-row{display:flex;align-items:center;gap:10px;background:#faf5ec;border:1px solid rgba(31,27,22,.08);
+  border-radius:12px;padding:10px 12px}
+.timer-row .tr-name{flex:1;min-width:0;font-family:"Iowan Old Style",Georgia,serif;font-size:16px;
+  font-weight:700;color:#1f1b16;background:none;border:none;outline:none;padding:4px 2px;border-bottom:1px dashed transparent}
+.timer-row .tr-name:focus{border-bottom-color:var(--accent)}
+.tr-goal{display:flex;align-items:center;gap:6px;font-family:"Helvetica Neue",Arial,sans-serif}
+.tr-goal button{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);background:#fff;
+  cursor:pointer;font-size:15px;line-height:1;color:var(--ink-soft);display:grid;place-items:center}
+.tr-goal button:hover{border-color:var(--accent);color:var(--accent)}
+.tr-goal .tr-val{font-size:13px;font-variant-numeric:tabular-nums;min-width:44px;text-align:center;font-weight:600}
+.tr-del{background:none;border:none;cursor:pointer;color:#c0b6a4;font-size:18px;padding:4px 6px;
+  font-family:"Helvetica Neue",Arial,sans-serif}
+.tr-del:hover{color:var(--accent)}
+.add-row{width:100%;font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:13px;
+  font-weight:600;letter-spacing:.04em;color:var(--accent);background:none;
+  border:1.5px dashed var(--accent);border-radius:12px;padding:12px;transition:background .15s}
+.add-row:hover{background:rgba(200,73,47,.06)}
+.modal-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.modal-done{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:13px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;padding:11px 26px;border-radius:22px;border:none;
+  background:var(--accent);color:#fff;margin-left:auto}
+.modal-done:hover{filter:brightness(1.08)}
+.modal-done:disabled{background:var(--line);color:#fff;cursor:not-allowed;filter:none}
+/* onboarding */
+.onboard-sub{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
+  line-height:1.6;margin:6px 0 16px}
+.chip-grid{display:flex;flex-wrap:wrap;gap:9px}
+.chip{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:13px;font-weight:600;
+  padding:9px 15px;border-radius:22px;border:1.5px solid var(--line);background:#fff;color:#5f5648;
+  transition:all .15s}
+.chip:hover{border-color:var(--accent-soft)}
+.chip.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.onboard-custom{display:flex;gap:8px;margin-top:16px}
+.onboard-custom input{flex:1;font-family:"Iowan Old Style",Georgia,serif;font-size:15px;
+  padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#faf5ec;color:#1f1b16;outline:none}
+.onboard-custom input:focus{border-color:var(--accent)}
+.onboard-custom button{font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;font-size:12px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:0 16px;border-radius:12px;
+  border:1.5px solid var(--accent);background:#fff;color:var(--accent)}
+.onboard-count{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft)}
 
 .celebrate{position:fixed;inset:0;display:none;place-items:center;
   background:rgba(244,239,230,.93);z-index:50;backdrop-filter:blur(4px)}
@@ -441,7 +509,10 @@ body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,
   </div>
 
   <div class="end-day-wrap">
-    <button class="end-day" id="endDayBtn">Finish &amp; start new day</button>
+    <div class="end-day-row">
+      <button class="end-day" id="manageBtn">Manage timers</button>
+      <button class="end-day" id="endDayBtn">Finish &amp; start new day</button>
+    </div>
     <div class="end-day-confirm" id="endDayConfirm">
       <span id="endDayMsg">Log this day and start fresh?</span>
       <button class="ed-yes" id="endDayYes">Yes, log &amp; reset</button>
@@ -470,6 +541,41 @@ body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,
   </div>
 </div>
 
+<!-- Manage Timers modal -->
+<div class="modal" id="manageModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="manageTitle">Manage timers</h2>
+      <button class="modal-x" id="manageClose">&times;</button>
+    </div>
+    <div class="modal-list" id="manageList"></div>
+    <button class="add-row" id="addTimerBtn">+ Add a timer</button>
+    <div class="modal-foot">
+      <button class="modal-done" id="manageDone">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Onboarding (first run) -->
+<div class="modal" id="onboardModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Build your day</h2>
+      <button class="modal-x" id="onboardSkip">skip</button>
+    </div>
+    <p class="onboard-sub">Pick the categories you want to track. Each becomes a one-hour timer — you can rename, retime, add or remove any of them later.</p>
+    <div class="chip-grid" id="chipGrid"></div>
+    <div class="onboard-custom">
+      <input type="text" id="onboardCustom" placeholder="Add your own…" maxlength="40">
+      <button id="onboardAddCustom">Add</button>
+    </div>
+    <div class="modal-foot">
+      <span class="onboard-count" id="onboardCount">0 selected</span>
+      <button class="modal-done" id="onboardStart" disabled>Start my day</button>
+    </div>
+  </div>
+</div>
+
 <div class="celebrate" id="celebrate">
   <div class="msg"><h2>Seven for seven.</h2>
     <p>Started <span class="stamp" id="cStart">--</span><br>Finished <span class="stamp" id="cEnd">--</span><br>
@@ -478,19 +584,19 @@ body.night .tod-control .tod-lab,body.night .footer-note{color:rgba(255,255,255,
 </div>
 
 <script>
-const DURATION=60*60;
-const DEFAULTS=[
-  {name:"Crypto",note:"News (Telegram &amp; Twitter) &amp; trading"},
-  {name:"Tech & Humanity",note:"Reading (email, book) &amp; writing"},
-  {name:"AI & Vibe Coding",note:"Research, lessons &amp; app building"},
-  {name:"Training",note:"Run, cycle, mobility, strength, climb"},
-  {name:"Outdoor & Nature",note:"Research, shanshui"},
-  {name:"Farm Planning",note:"Event planning"},
-  {name:"Contemporary Art",note:"Reading, curation, writing"}
+const HOUR=60*60;
+const DEFAULT_GOAL=HOUR;         // default goal for a newly added timer (1h)
+const GOAL_STEP=15*60;           // 15-minute granularity
+const GOAL_MIN=15*60, GOAL_MAX=4*HOUR;
+// starter categories offered during first-run onboarding (each defaults to 1h)
+const ONBOARDING=[
+  "Reading","Exercise","Coding","Cleaning","Writing","Learning",
+  "Meditation","Cooking","Admin","Music","Outdoors","Rest"
 ];
-const N=DEFAULTS.length;
-const KEY="sevenHours.v4";
+const KEY="sevenHours.v5";
 const HKEY="sevenHours.history.v2";
+
+function N(){return state.cats.length;}
 
 let state=load();
 let activeIdx=state.cats.findIndex(c=>c.running); // currently featured spoke (-1 none)
@@ -499,26 +605,31 @@ function todayStr(){return new Date().toLocaleDateString('en-CA');}
 function prettyDate(d){return new Date(d+'T00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});}
 function nowClock(){return new Date().toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});}
 
+function makeCat(name,goal,note){
+  return {name:name,note:note||"",goal:goal||DEFAULT_GOAL,elapsed:0,remaining:goal||DEFAULT_GOAL,
+    running:false,done:false,lastTick:null};
+}
 function freshState(){
-  return {date:todayStr(),firstStart:null,allDone:null,
-    cats:DEFAULTS.map(c=>({name:c.name,note:c.note,elapsed:0,remaining:DURATION,running:false,done:false,lastTick:null}))};
+  // keep the same set of timers the user last had (their template); empty on first run → onboarding
+  const template = (state && state.cats) ? state.cats.map(c=>makeCat(c.name,c.goal,c.note)) : [];
+  return {date:todayStr(),firstStart:null,allDone:null,cats:template};
 }
 function load(){
   // Restore the saved session regardless of calendar date — the day only ends
   // when the user resets it (they may work past midnight). No auto-reset at 12am.
   try{const raw=localStorage.getItem(KEY);
     if(raw){const s=JSON.parse(raw);reconcile(s);return s;}}catch(e){}
-  return freshState();
+  return {date:todayStr(),firstStart:null,allDone:null,cats:[]}; // empty → onboarding runs
 }
 function reconcile(s){const now=Date.now();
-  s.cats.forEach(c=>{
-    // migrate old saves that only had `remaining`
-    if(c.elapsed==null)c.elapsed=Math.max(0,DURATION-(c.remaining!=null?c.remaining:DURATION));
+  (s.cats||[]).forEach(c=>{
+    if(c.goal==null)c.goal=DEFAULT_GOAL;                 // migrate: give old timers a 1h goal
+    if(c.elapsed==null)c.elapsed=Math.max(0,c.goal-(c.remaining!=null?c.remaining:c.goal));
     if(c.running&&c.lastTick){
       const el=Math.floor((now-c.lastTick)/1000);
       c.elapsed+=el;c.lastTick=now;
     }
-    c.remaining=Math.max(0,DURATION-c.elapsed);
+    c.remaining=Math.max(0,c.goal-c.elapsed);
   });
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
@@ -527,7 +638,7 @@ function saveHist(h){localStorage.setItem(HKEY,JSON.stringify(h));}
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');}
 // display for a category: counts down to 00:00, then shows overtime as +MM:SS
 function timerText(c){
-  if(c.elapsed>=DURATION){const ov=c.elapsed-DURATION;return '+'+fmt(ov);}
+  if(c.elapsed>=c.goal){const ov=c.elapsed-c.goal;return '+'+fmt(ov);}
   return fmt(c.remaining);
 }
 function spanText(a,b){return a&&b?`${a} → ${b}`:'';}
@@ -602,8 +713,8 @@ function applyTimeOfDay(){
     root.setProperty('--card-border','rgba(255,255,255,.5)');
   }
   // on dark backgrounds keep pools near the base tone (subtle), brighter days can pop
-  const pa = s.isDark ? 0.6 : 0.74;
-  root.setProperty('--glow',todRgba(s.gl, s.isDark?0.55:0.7));
+  const pa = s.isDark ? 0.72 : 0.88;
+  root.setProperty('--glow',todRgba(s.gl, s.isDark?0.66:0.82));
   root.setProperty('--bg-pool1',todRgba(s.p1,pa));
   root.setProperty('--bg-pool2',todRgba(s.p2,pa-0.04));
   root.setProperty('--bg-pool3',todRgba(s.p3,pa-0.02));
@@ -667,7 +778,7 @@ function positionSpokes(){
 
 function doneLabel(c){
   // when a category is done, show its overtime if any, else "Done"
-  const ov=c.elapsed-DURATION;
+  const ov=c.elapsed-c.goal;
   return ov>=1 ? '+'+fmt(ov) : 'Done';
 }
 function refreshSpoke(i){
@@ -720,7 +831,7 @@ function refreshMcard(i){
 }
 function refreshMhub(){
   const done=state.cats.filter(c=>c.done).length;
-  document.getElementById('mHubCount').textContent=`${done}/${N}`;
+  document.getElementById('mHubCount').textContent=`${done}/${N()}`;
   if(activeIdx>=0 && state.cats[activeIdx] && state.cats[activeIdx].running){
     const c=state.cats[activeIdx];
     mhub.classList.add('featured');
@@ -737,7 +848,7 @@ function refreshMobile(){
 
 function refreshHub(){
   const done=state.cats.filter(c=>c.done).length;
-  document.getElementById('hubCount').textContent=`${done}/${N}`;
+  document.getElementById('hubCount').textContent=`${done}/${N()}`;
   if(activeIdx>=0 && state.cats[activeIdx] && state.cats[activeIdx].running){
     const c=state.cats[activeIdx];
     hub.classList.add('featured');
@@ -754,8 +865,8 @@ function refreshAll(){
   positionSpokes();
   refreshMobile();
   const done=state.cats.filter(c=>c.done).length;
-  document.getElementById('pfill').style.width=(done/N*100)+'%';
-  document.getElementById('pcount').textContent=`${done} / ${N} done`;
+  document.getElementById('pfill').style.width=(N()?done/N()*100:0)+'%';
+  document.getElementById('pcount').textContent=`${done} / ${N()} done`;
   document.getElementById('firstStart').textContent=state.firstStart||'—';
   document.getElementById('allDone').textContent=state.allDone||'—';
   refreshEndDay();
@@ -795,7 +906,7 @@ function finish(i){
 }
 function checkComplete(){
   const done=state.cats.filter(c=>c.done).length;
-  if(done===N&&!state.allDone){
+  if(N()>0 && done===N() && !state.allDone){
     // all seven reached — celebrate and stamp the finish time, but DON'T log yet:
     // the user may keep accruing overtime; the day is logged on "Finish & start new day".
     state.allDone=nowClock();save();showCelebrate();refreshAll();
@@ -815,7 +926,7 @@ hub.querySelector('#hubFin').addEventListener('click',()=>{if(activeIdx>=0)finis
 stage.addEventListener('blur',e=>{
   if(e.target.classList.contains('sname')){
     const i=+e.target.dataset.i;
-    state.cats[i].name=e.target.textContent.trim()||DEFAULTS[i].name;save();
+    state.cats[i].name=e.target.textContent.trim()||state.cats[i].name||"Untitled";save();
     if(activeIdx===i){refreshHub();refreshMhub();}
     if(mcardEls[i]){const n=mcardEls[i].querySelector('.mname');if(n)n.textContent=state.cats[i].name;}
   }
@@ -836,7 +947,7 @@ mhub.querySelector('#mHubFin').addEventListener('click',()=>{if(activeIdx>=0)fin
 mtrack.addEventListener('blur',e=>{
   if(e.target.classList.contains('mname')){
     const i=+e.target.dataset.i;
-    state.cats[i].name=e.target.textContent.trim()||DEFAULTS[i].name;save();
+    state.cats[i].name=e.target.textContent.trim()||state.cats[i].name||"Untitled";save();
     if(activeIdx===i)refreshMhub();
     if(spokeEls[i]){const n=spokeEls[i].querySelector('.sname');if(n)n.textContent=state.cats[i].name;}
   }
@@ -855,9 +966,9 @@ function tick(){
       if(el>=1){
         const wasDone=c.done;
         c.elapsed+=el;c.lastTick=now;changed=true;
-        c.remaining=Math.max(0,DURATION-c.elapsed);
+        c.remaining=Math.max(0,c.goal-c.elapsed);
         // goal reached: mark done + chime once, but KEEP running into overtime
-        if(!wasDone && c.elapsed>=DURATION){c.done=true;chime();}
+        if(!wasDone && c.elapsed>=c.goal){c.done=true;chime();}
       }
       const disp = timerText(c);
       const sp=spokeEls[i];
@@ -888,9 +999,9 @@ function logToday(){
     date:state.date,               // the day the session STARTED (before midnight if late)
     firstStart:state.firstStart,
     allDone:state.allDone,
-    done:done,total:N,
-    // detailed per-category breakdown: total seconds spent (incl. overtime) + finished
-    cats:state.cats.map(c=>({name:c.name,spent:(c.elapsed!=null?c.elapsed:Math.max(0,DURATION-c.remaining)),done:!!c.done})),
+    done:done,total:N(),
+    // detailed per-category breakdown: goal, total seconds spent (incl. overtime), finished
+    cats:state.cats.map(c=>({name:c.name,goal:c.goal||HOUR,spent:(c.elapsed!=null?c.elapsed:Math.max(0,(c.goal||HOUR)-c.remaining)),done:!!c.done})),
     loggedAt:new Date().toISOString()
   });
   saveHist(h);renderHist();
@@ -938,7 +1049,7 @@ endDayBtn.addEventListener('click',()=>{
   const done=state.cats.filter(c=>c.done).length;
   const started = state.firstStart || done>0;
   endDayMsg.textContent = started
-    ? `Log this day (${done}/${N} done) and start fresh?`
+    ? `Log this day (${done}/${N()} done) and start fresh?`
     : 'Start a fresh day? (Nothing to log yet.)';
   endDayBtn.style.display='none';
   endDayConfirm.classList.add('show');
@@ -957,7 +1068,7 @@ document.getElementById('endDayYes').addEventListener('click',()=>{
   if(started){ if(!state.allDone)state.allDone=nowClock(); save(); logToday(); }
   endDayConfirm.classList.remove('show');
   endDayBtn.style.display='';
-  const wasComplete = done===N;
+  const wasComplete = N()>0 && done===N();
   state=freshState();activeIdx=-1;buildSpokes();buildMobile();refreshAll();
   if(wasComplete) showCelebrate();
 });
@@ -981,8 +1092,124 @@ todSlider?.addEventListener('input',()=>{todOverride=+todSlider.value;applyTimeO
 todAuto?.addEventListener('click',()=>{todOverride=null;applyTimeOfDay();syncTodSlider();});
 syncTodSlider();
 
+/* ---- manage timers + onboarding ---- */
+function goalLabel(sec){
+  const m=Math.round(sec/60);
+  if(m<60)return m+"m";
+  const h=Math.floor(m/60),mm=m%60;
+  return mm?`${h}h ${mm}m`:`${h}h`;
+}
+function rebuildTimers(){
+  // fully re-render both layouts after the timer set changes
+  activeIdx=state.cats.findIndex(c=>c.running);
+  save();buildSpokes();buildMobile();refreshAll();
+}
+
+const manageModal=document.getElementById('manageModal');
+const manageList=document.getElementById('manageList');
+function openManage(){renderManageList();manageModal.classList.add('show');}
+function closeManage(){manageModal.classList.remove('show');}
+function renderManageList(){
+  manageList.innerHTML='';
+  state.cats.forEach((c,i)=>{
+    const row=document.createElement('div');row.className='timer-row';
+    row.innerHTML=`
+      <input class="tr-name" value="${(c.name||'').replace(/"/g,'&quot;')}" data-i="${i}" maxlength="40">
+      <div class="tr-goal">
+        <button data-act="minus" data-i="${i}">&minus;</button>
+        <span class="tr-val">${goalLabel(c.goal)}</span>
+        <button data-act="plus" data-i="${i}">+</button>
+      </div>
+      <button class="tr-del" data-act="del" data-i="${i}" title="Delete">&times;</button>`;
+    manageList.appendChild(row);
+  });
+}
+manageList.addEventListener('click',e=>{
+  const btn=e.target.closest('button');if(!btn)return;
+  const i=+btn.dataset.i,act=btn.dataset.act,c=state.cats[i];if(!c)return;
+  if(act==='plus'){c.goal=Math.min(GOAL_MAX,c.goal+GOAL_STEP);}
+  else if(act==='minus'){c.goal=Math.max(GOAL_MIN,c.goal-GOAL_STEP);}
+  else if(act==='del'){
+    if(confirm(`Delete "${c.name}"? Any time tracked for it today is discarded.`)){
+      state.cats.splice(i,1);rebuildTimers();renderManageList();return;
+    }
+  }
+  if(act==='plus'||act==='minus'){
+    // recompute derived remaining/done for the new goal
+    c.remaining=Math.max(0,c.goal-c.elapsed);
+    c.done = c.elapsed>=c.goal ? c.done : false; // if goal raised above elapsed, no longer done
+    if(c.elapsed>=c.goal) c.done=true;
+    rebuildTimers();
+    const val=btn.parentElement.querySelector('.tr-val');if(val)val.textContent=goalLabel(c.goal);
+  }
+});
+manageList.addEventListener('input',e=>{
+  if(e.target.classList.contains('tr-name')){
+    const i=+e.target.dataset.i;
+    state.cats[i].name=e.target.value.trim()||state.cats[i].name||'Untitled';
+    save();buildSpokes();buildMobile();refreshAll();
+  }
+});
+document.getElementById('addTimerBtn').addEventListener('click',()=>{
+  state.cats.push(makeCat('New timer',DEFAULT_GOAL));
+  rebuildTimers();renderManageList();
+  // focus the new row's name for quick editing
+  const rows=manageList.querySelectorAll('.tr-name');
+  const last=rows[rows.length-1];if(last){last.focus();last.select();}
+});
+document.getElementById('manageBtn').addEventListener('click',openManage);
+document.getElementById('manageClose').addEventListener('click',closeManage);
+document.getElementById('manageDone').addEventListener('click',closeManage);
+manageModal.addEventListener('click',e=>{if(e.target===manageModal)closeManage();});
+
+/* ---- onboarding (first run) ---- */
+const onboardModal=document.getElementById('onboardModal');
+const chipGrid=document.getElementById('chipGrid');
+const onboardCount=document.getElementById('onboardCount');
+const onboardStart=document.getElementById('onboardStart');
+let onboardSel=[];
+function renderChips(){
+  chipGrid.innerHTML='';
+  const all=[...ONBOARDING, ...onboardSel.filter(n=>!ONBOARDING.includes(n))];
+  all.forEach(name=>{
+    const chip=document.createElement('button');
+    chip.className='chip'+(onboardSel.includes(name)?' sel':'');
+    chip.textContent=name;
+    chip.addEventListener('click',()=>{
+      const i=onboardSel.indexOf(name);
+      if(i>=0)onboardSel.splice(i,1);else onboardSel.push(name);
+      renderChips();updateOnboardCount();
+    });
+    chipGrid.appendChild(chip);
+  });
+}
+function updateOnboardCount(){
+  onboardCount.textContent=`${onboardSel.length} selected`;
+  onboardStart.disabled=onboardSel.length===0;
+}
+function openOnboard(){onboardSel=[];renderChips();updateOnboardCount();onboardModal.classList.add('show');}
+document.getElementById('onboardAddCustom').addEventListener('click',()=>{
+  const inp=document.getElementById('onboardCustom');
+  const v=inp.value.trim();
+  if(v&&!onboardSel.includes(v)){onboardSel.push(v);inp.value='';renderChips();updateOnboardCount();}
+});
+document.getElementById('onboardCustom').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();document.getElementById('onboardAddCustom').click();}
+});
+onboardStart.addEventListener('click',()=>{
+  state.cats=onboardSel.map(name=>makeCat(name,DEFAULT_GOAL));
+  onboardModal.classList.remove('show');
+  rebuildTimers();
+});
+document.getElementById('onboardSkip').addEventListener('click',()=>{
+  // skipping with nothing selected → seed one starter so the app isn't empty
+  if(!state.cats.length){state.cats=[makeCat('Focus',DEFAULT_GOAL)];rebuildTimers();}
+  onboardModal.classList.remove('show');
+});
+
 /* ---- init ---- */
 applyTimeOfDay();tickClock();buildSpokes();buildMobile();refreshAll();renderHist();
+if(!state.cats.length){openOnboard();}   // first run (or after full clear) → onboarding
 window.addEventListener('resize',positionSpokes);
 setInterval(tick,250);
 setInterval(tickClock,1000);
@@ -1011,6 +1238,11 @@ function resumeAuto(){clearTimeout(mResume);mResume=setTimeout(()=>{mPos=mgaller
 ['touchend','pointerup','mouseleave'].forEach(ev=>mgallery.addEventListener(ev,resumeAuto));
 // keep the float in sync if the user scrolls manually
 mgallery.addEventListener('scroll',()=>{if(!mAuto)mPos=mgallery.scrollLeft;},{passive:true});
+
+/* ---- PWA: register service worker for offline + installability ---- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
 
 </script>
 </body>

@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Seven Hours Records</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#c8722f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Seven Hours">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 :root{
   --bg:#f4efe6;--bg2:#efe7d8;--bg3:#e9dfcc;--ink:#1f1b16;--ink-soft:#8a7d6c;--paper:#fffdf8;
@@ -59,6 +66,7 @@ h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.02em;line-height:.95}
   font-family:"Helvetica Neue",Arial,sans-serif;padding:7px 0}
 @media(max-width:520px){.cat-row{grid-template-columns:100px 1fr 54px;gap:8px}}
 .cat-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-name .cat-goal{display:block;font-size:10px;font-weight:400;color:var(--ink-soft);letter-spacing:.02em}
 .cat-name.done::after{content:" ✓";color:var(--done)}
 .cat-bar{height:10px;background:rgba(31,27,22,.07);border-radius:20px;overflow:hidden;display:flex;align-items:center;gap:2px}
 .cat-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#e8b04a,var(--accent))}
@@ -113,14 +121,14 @@ function fmtDur(sec){
   const h=Math.floor(m/60),mm=m%60;
   return mm?`${h}h ${mm}m`:`${h}h`;
 }
-// normalize both old (cats:[names]) and new (cats:[{name,spent,done}]) formats
+// normalize old (cats:[names]) and new (cats:[{name,goal,spent,done}]) formats
 function normalizeCats(d){
   if(!Array.isArray(d.cats))return [];
   if(d.cats.length && typeof d.cats[0]==='object'){
-    return d.cats.map(c=>({name:c.name,spent:c.spent||0,done:!!c.done}));
+    return d.cats.map(c=>({name:c.name,goal:c.goal||DURATION,spent:c.spent||0,done:!!c.done}));
   }
-  // old format: names only, infer spent from done flag isn't possible → mark done ones as full hour
-  return d.cats.map((name,i)=>({name,spent:(i<(d.done||0))?DURATION:0,done:i<(d.done||0)}));
+  // oldest format: names only → assume a 1h goal, done ones counted as a full hour
+  return d.cats.map((name,i)=>({name,goal:DURATION,spent:(i<(d.done||0))?DURATION:0,done:i<(d.done||0)}));
 }
 
 const hist=loadHist();
@@ -136,7 +144,7 @@ if(!hist.length){
   let totalDays=hist.length, totalSpent=0, totalOver=0, totalDone=0, fullDays=0;
   hist.forEach(d=>{
     const cats=normalizeCats(d);
-    cats.forEach(c=>{totalSpent+=c.spent;totalOver+=Math.max(0,c.spent-DURATION);});
+    cats.forEach(c=>{totalSpent+=c.spent;totalOver+=Math.max(0,c.spent-c.goal);});
     totalDone += (d.done||cats.filter(c=>c.done).length);
     if((d.done||0) >= (d.total||7)) fullDays++;
   });
@@ -156,13 +164,13 @@ if(!hist.length){
     const done=d.done!=null?d.done:cats.filter(c=>c.done).length;
     const full=done>=total;
     const daySpent=cats.reduce((s,c)=>s+c.spent,0);
-    const dayOver=cats.reduce((s,c)=>s+Math.max(0,c.spent-DURATION),0);
+    const dayOver=cats.reduce((s,c)=>s+Math.max(0,c.spent-c.goal),0);
     const rows=cats.map(c=>{
-      const pct=Math.min(100,(Math.min(c.spent,DURATION)/DURATION)*100);
-      const over=Math.max(0,c.spent-DURATION);
-      const overPct=Math.min(40,(over/DURATION)*100); // small visual nub for overtime
+      const pct=Math.min(100,(Math.min(c.spent,c.goal)/c.goal)*100);
+      const over=Math.max(0,c.spent-c.goal);
+      const overPct=Math.min(40,(over/c.goal)*100); // small visual nub for overtime
       return `<div class="cat-row">
-        <div class="cat-name ${c.done?'done':''}">${c.name}</div>
+        <div class="cat-name ${c.done?'done':''}">${c.name}<span class="cat-goal">goal ${fmtDur(c.goal)}</span></div>
         <div class="cat-bar">
           <div class="cat-fill ${c.done?'done':''}" style="width:${pct}%"></div>
           ${over>0?`<div class="cat-over" style="width:${overPct}%"></div>`:''}
@@ -185,11 +193,12 @@ if(!hist.length){
 
 // ---- export CSV (detailed: one row per category per day) ----
 document.getElementById('exportBtn')?.addEventListener('click',()=>{
-  let csv="date,first_start,all_complete,category,minutes_spent,finished\n";
+  let csv="date,first_start,all_complete,category,goal_minutes,minutes_spent,overtime_minutes,finished\n";
   hist.forEach(d=>{
     normalizeCats(d).forEach(c=>{
       const name='"'+String(c.name).replace(/"/g,'""')+'"';
-      csv+=`${d.date},${d.firstStart||''},${d.allDone||''},${name},${Math.round(c.spent/60)},${c.done?'yes':'no'}\n`;
+      const over=Math.max(0,c.spent-c.goal);
+      csv+=`${d.date},${d.firstStart||''},${d.allDone||''},${name},${Math.round(c.goal/60)},${Math.round(c.spent/60)},${Math.round(over/60)},${c.done?'yes':'no'}\n`;
     });
   });
   const blob=new Blob([csv],{type:'text/csv'});
@@ -204,6 +213,11 @@ document.getElementById('clearBtn')?.addEventListener('click',()=>{
     location.reload();
   }
 });
+
+/* ---- PWA: register service worker ---- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
 </script>
 </body>
 </html>
